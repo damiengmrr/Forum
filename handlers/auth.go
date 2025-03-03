@@ -119,3 +119,15 @@ func SettingsHandler(w http.ResponseWriter, r *http.Request) {
         http.ServeFile(w, r, "templates/settings.html")
     }
 }
+
+func ContactHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+        http.ServeFile(w, r, "templates/contact.html")
+    }
+}
+
+func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+        http.ServeFile(w, r, "templates/categories.html")
+    }
+}

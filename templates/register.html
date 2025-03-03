@@ -5,25 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
     <link rel="stylesheet" href="../static/styles.css">
-    <link rel="icon" type="image/x-icon" href="templates/imgage/forum.png">
+    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 </head>
 <body>
-    <h2>Inscription</h2>
-    <form action="/register" method="POST">
-        <label for="username">Nom d'utilisateur :</label>
-        <input type="text" id="username" name="username" required>
+    <body>
+        <div class="container">
+        <div class="image-container">
+          <img src="../static/image/forum.png" alt="Inscription">
+            <h2>Inscription</h2>
+            <form action="/register" method="POST">
+                <label for="username">Nom d'utilisateur :</label>
+                <input type="text" id="username" name="username" required>
 
-        <label for="email">Email :</label>
-        <input type="email" id="email" name="email" required>
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
 
-        <label for="password">Mot de passe :</label>
-        <input type="password" id="password" name="password" required>
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" required>
 
-        <button type="submit">S'inscrire</button>
+                <button type="submit">S'inscrire</button>
+            </form>
+            <p class="login-text">Déjà un compte ? <a href="/login">Se connecter</a></p>
+        </div>
         <script>
             document.querySelector("form").addEventListener("submit", function(event) {
                 event.preventDefault();
-                window.location.href = "acceuil.html"; 
+                window.location.href = "/home"; 
             });
         </script>
     </form>

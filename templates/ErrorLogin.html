@@ -4,12 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erreur - Login</title>
-    <link rel="stylesheet" href="../static/ErreurLogin.css">
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <h1>Erreur - Login</h1>
-    <p>Le nom d'utilisateur ou le mot de passe est incorrect.</p>
+    <h1>Erreur - Login<br></h1>
+    
+    <p>Le nom d'utilisateur ou le mot de passe est incorrect.<br> </p>
+    
     <a href="/login"><button>réessayer</button></a>
+     
     <a href="/home"><button>retour à l'accueil</button></a>
+    <div class="container">
+        <div class="form-container">
+            <h2>Erreur - Login</h2>
+            <form action="/login" method="POST">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit">Se connecter</button>
+            </form>
+
+            <p class="login-text">Pas encore inscrit ? <a href="/register">Créer un compte</a></p>
+            <a href="/home"><button>retour à l'accueil</button></a>
+        </div>
+    </div>
 </body>
 </html>
