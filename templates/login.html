@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
+    <title>Acceuil</title>
     <link rel="stylesheet" href="/static/styles.css">
-</head>
+    <link rel="icon" type="image/x-icon" href="/home/theo974d/Bureau/Forum/templates/image/forum.png">
 <body>
-    <h2>Connexion</h2>
-    <form action="/login" method="POST">
-        <label for="username">Nom d'utilisateur :</label>
-        <input type="text" id="username" name="username" required>
-        
-        <label for="email">Email :</label>
-        <input type="email" id="email" name="email" required>
-        
-        <label for="password">Mot de passe :</label>
-        <input type="password" id="password" name="password" required>
-        
-        <button type="submit">Se connecter</button>
-    </form>
+    <div class="container">
+        <div class="form-container">
+            <h2>Connexion</h2>
+            <form action="/login" method="POST">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" required>
+
+                <button type="submit">Se connecter</button>
+            </form>
+            <p class="login-text">Pas encore inscrit ? <a href="register.html">Créer un compte</a></p>
+        </div>
+    </div>
 </body>
 </html>

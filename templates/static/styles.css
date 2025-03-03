@@ -1,67 +1,61 @@
-/* Style global */
+/*styles registers */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
 
-/* Conteneur principal */
-.container {
+form {
     background: white;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 300px;
-}
-
-/* Titres */
-h2 {
-    color: #333;
-}
-
-/* Formulaire */
-form {
+    width: 350px;
     display: flex;
     flex-direction: column;
 }
 
-/* Champs de saisie */
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+label {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
 input {
     padding: 10px;
-    margin: 10px 0;
+    margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
 }
 
-/* Bouton */
 button {
+    margin-top: 15px;
     padding: 10px;
-    background: #007BFF;
-    border: none;
+    background-color: #007BFF;
     color: white;
+    border: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
 button:hover {
-    background: #0056b3;
+    background-color: #0056b3;
 }
-
-/* Liens */
-a {
-    text-decoration: none;
-    color: #007BFF;
-    font-size: 14px;
-}
-
-a:hover {
-    text-decoration: underline;
+.image-container img {
+    width: 100px; /* Ajustez la taille de l'image */
+    height: auto;
+    margin-right: 20px;
+    border-radius: 50%;
 }
