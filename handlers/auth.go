@@ -60,9 +60,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         // Vérifier si l'email existe
         var storedHash string
         err := database.DB.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&storedHash)
-        if err == sql.ErrNoRows || err != nil {
-            // Si l'email n'existe pas ou autre erreur, redirige vers la page d'erreur
+        if err == sql.ErrNoRows {
+            // Si l'email n'existe pas, redirige vers la page d'erreur
             http.ServeFile(w, r, "templates/ErrorLogin.html")
+            return
+        } else if err != nil {
+            // Si une autre erreur se produit
+            http.Error(w, "Erreur serveur", http.StatusInternalServerError)
             return
         }
 
@@ -82,9 +86,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         }
         http.SetCookie(w, &cookie)
 
-        fmt.Fprintln(w, "Connexion réussie !")
+        // Redirection vers la page d'accueil après connexion réussie
+        http.Redirect(w, r, "/home", http.StatusFound)
         return
     } else {
+        // Si la méthode n'est pas POST, on affiche le formulaire de connexion
         http.ServeFile(w, r, "templates/login.html")
     }
 }
