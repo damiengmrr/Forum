@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
-    <link rel="stylesheet" href="static/styles.css">
-    <link rel="icon" type="image/x-icon" href="/home/theo974d/Bureau/Forum/templates/image/forum.png">
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 </head>     
 <body>
     <body>
         <div class="container">
         <div class="image-container">
-          <img src="/home/theo974d/Bureau/Forum/templates/image/forum.png" alt="Inscription">
+          <img src="../static/image/forum.png" alt="Inscription">
             <h2>Inscription</h2>
             <form action="/register" method="POST">
                 <label for="username">Nom d'utilisateur :</label>
@@ -30,7 +30,7 @@
         <script>
             document.querySelector("form").addEventListener("submit", function(event) {
                 event.preventDefault();
-                window.location.href = "file:///home/theo974d/Bureau/Forum/templates/home.html"; 
+                window.location.href = "../templates/home.html"; 
             });
         </script>
     </form>
