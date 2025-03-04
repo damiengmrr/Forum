@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceuil</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <link rel="icon" type="image/x-icon" href="/home/theo974d/Bureau/Forum/templates/image/forum.png">
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 <body>
     <div class="container">
         <div class="form-container">
+            <div class="image-container"></div>
+            <img src="../static/image/forum.png" alt="Inscription">
             <h2>Connexion</h2>
             <form action="/login" method="POST">
                 <label for="email">Email :</label>
@@ -20,6 +22,7 @@
                 <button type="submit">Se connecter</button>
             </form>
             <p class="login-text">Pas encore inscrit ? <a href="register.html">Créer un compte</a></p>
+            </div>
         </div>
     </div>
 </body>
