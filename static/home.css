@@ -10,7 +10,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #000000;
+    background-color: #007BFF;
     padding: 15px 20px;
     color: white;
     width: 100%;
@@ -38,7 +38,7 @@ nav ul li a {
 
 .account-btn {
     background-color: white;
-    color: #000000;
+    color: #007BFF;
     padding: 8px 12px;
     border-radius: 5px;
     text-decoration: none;
@@ -63,7 +63,7 @@ nav ul li a {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #ff5e00;
+    background-color: #007BFF;
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -101,7 +101,7 @@ nav ul li a {
 }
 
 footer {
-    background: #000000;
+    background: #007BFF;
     color: white;
     text-align: center;
     padding: 10px;

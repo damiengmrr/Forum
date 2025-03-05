@@ -108,16 +108,9 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	cookie := http.Cookie{
-        Name:   "session",
-        Value:  "",
-        Path:   "/",
-        MaxAge: -1,
-    }
-    http.SetCookie(w, &cookie)
-
-    fmt.Fprintln(w, "Déconnexion réussie !")
-	http.ServeFile(w, r, "templates/home.html")
+    if r.Method == "GET" {
+        http.ServeFile(w, r, "templates/logout.html")
+}
 }
 
 func SettingsHandler(w http.ResponseWriter, r *http.Request) {
