@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un Post</title>
+    <link rel="stylesheet" href="static/home.css">
+    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
+</head>
+<body>
+    <header>
+        <img src="../static/image/forum.png" width="70" height="auto">
+        <nav>
+            <ul>
+                <li><a href="/home">Accueil</a></li>
+                <li><a href="/categories">Catégories</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="/account" class="account-btn">Mon Compte</a>
+    </header>
+
+    <section id="create-post-form">
+        <h1>Créer un Nouveau Post</h1>
+        <form action="/create-post" method="POST">
+            <label for="author">Nom de l'Auteur</label>
+            <input type="text" name="author" id="author" required>
+
+            <label for="content">Contenu du Post</label>
+            <textarea name="content" id="content" required></textarea>
+
+            <label for="category">Catégorie</label>
+            <select name="category" id="category" required>
+                <option value="discussion">Discussions Générales</option>
+                <option value="technology">Technologie</option>
+                <option value="gaming">Jeux Vidéo</option>
+                <option value="literature">Littérature</option>
+            </select>
+
+            <button type="submit">Publier</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 MonForum - Tous droits réservés</p>
+    </footer>
+</body>
+</html>

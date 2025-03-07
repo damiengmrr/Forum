@@ -1,4 +1,4 @@
-body {
+/*body {
     background-color: #f4f4f4;
     color: #333;
     display: flex;
@@ -109,4 +109,106 @@ footer {
     position: fixed;
     bottom: 0;
     left: 0;
+}*/
+/* Global */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+header nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+header nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+section {
+    padding: 20px;
+    margin: 20px;
+}
+
+section h1 {
+    color: #333;
+}
+
+section .btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+section .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Posts */
+#posts .post {
+    background-color: #fff;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#posts .post h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+#posts .post p {
+    font-size: 1em;
+    color: #555;
+}
+
+/* Formulaire */
+#create-post-form form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#create-post-form form label {
+    font-weight: bold;
+}
+
+#create-post-form form input, #create-post-form form textarea, #create-post-form form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#create-post-form form button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+#create-post-form form button:hover {
+    background-color: #218838;
 }

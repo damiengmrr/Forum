@@ -24,6 +24,7 @@ func main() {
 	http.HandleFunc("/settings", handlers.SettingsHandler)
 	http.HandleFunc("/contact", handlers.ContactHandler)
 	http.HandleFunc("/categories", handlers.CategoriesHandler)
+	http.HandleFunc("/create-post", handlers.CreatePostHandler)
 	http.HandleFunc("/", handlers.HomeHandler)
 
 	// Démarrer le serveur

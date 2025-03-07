@@ -101,7 +101,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.Execute(w, database.Posts)
+    tmpl.Execute(w, map[string]interface{}{
+        "Posts": database.Posts,
+    })
 }
 
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
