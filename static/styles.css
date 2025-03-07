@@ -54,7 +54,7 @@ button:hover {
     background-color: #0056b3;
 }
 .image-container img {
-    width: 100px; /* Ajustez la taille de l'image */
+    width: 100px; 
     height: auto;
     margin-right: 20px;
     border-radius: 50%;

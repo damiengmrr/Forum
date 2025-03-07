@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 .header {
-    background-color: #333;
+    background-color: #000000;
     color: white;
     padding: 15px 20px;
     font-size: 18px;
@@ -26,7 +26,7 @@ body {
 .container {
     width: 40%;
     margin: 30px auto;
-    background: #555;
+    background: #000000;
     padding: 25px;
     border-radius: 10px;
     color: white;
@@ -45,7 +45,7 @@ input {
     border-radius: 5px;
 }
 .btn-update {
-    background: #28a745;
+    background: #e65c00;
     color: white;
     border: none;
     padding: 10px;
@@ -53,4 +53,13 @@ input {
     width: 100%;
     border-radius: 5px;
     font-weight: bold;
+}
+.btn { 
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #e65c00;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
 }
