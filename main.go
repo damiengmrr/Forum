@@ -24,6 +24,7 @@ func main() {
 	http.HandleFunc("/settings", handlers.SettingsHandler)
 	http.HandleFunc("/contact", handlers.ContactHandler)
 	http.HandleFunc("/categories", handlers.CategoriesHandler)
+	http.HandleFunc("/", handlers.HomeHandler)
 
 	// Démarrer le serveur
 	fmt.Println("Serveur démarré sur : http://localhost:8080/home")

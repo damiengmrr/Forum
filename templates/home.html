@@ -36,6 +36,31 @@
         </div>
     </section>
 
+    <!-- Bouton pour créer un nouveau post -->
+    <section class="create-post">
+        <a href="/create-post" class="btn">Créer un Post</a>
+    </section>
+
+    <!-- Section des derniers posts -->
+    <section class="latest-posts">
+        <h2>Derniers Posts</h2>
+        <div class="post-list">
+            {{ range .Posts }}
+            <div class="post">
+                <h3>{{ .Title }}</h3>
+                <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
+                <p><strong>Catégorie :</strong> {{ .Category }}</p>
+                <p>{{ .Content }}</p>
+                <div class="post-actions">
+                    <button class="like-btn">👍 {{ .Likes }}</button>
+                    <button class="dislike-btn">👎 {{ .Dislikes }}</button>
+                    <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
+                </div>
+            </div>
+            {{ end }}
+        </div>
+    </section>
+
     <footer>
         <p>&copy; 2025 MonForum - Tous droits réservés</p>
     </footer>
