@@ -65,15 +65,27 @@ func InitDB() {
 	fmt.Println("✅ Table 'users' prête !")
 }
 
-// Fonction pour ajouter un utilisateur dans la base de données
-func AddUser(id, username, email, password string) {
-	// Requête SQL d'insertion
-	query := `INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)`
+// // Fonction pour ajouter un utilisateur dans la base de données
+// func AddUser(id, username, email, password string) {
+// 	// Requête SQL d'insertion
+// 	query := `INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)`
 
-	// Exécution de la requête d'insertion
-	_, err := DB.Exec(query, id, username, email, password)
-	if err != nil {
-		log.Fatal("Erreur lors de l'insertion de l'utilisateur:", err)
-	}
-	fmt.Println("Utilisateur ajouté avec succès!")
-}
+// 	// Exécution de la requête d'insertion
+// 	_, err := DB.Exec(query, id, username, email, password)
+// 	if err != nil {
+// 		log.Fatal("Erreur lors de l'insertion de l'utilisateur:", err)
+// 	}
+// 	fmt.Println("Utilisateur ajouté avec succès!")
+// }
+
+// func AddUser(id, username, email, password string) {
+//     fmt.Println("📌 Tentative d'ajout de l'utilisateur :", username, email)
+
+//     query := `INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)`
+
+//     _, err := DB.Exec(query, id, username, email, password)
+//     if err != nil {
+//         log.Fatal("Erreur lors de l'insertion de l'utilisateur:", err)
+//     }
+//     fmt.Println("✅ Utilisateur ajouté avec succès!")
+// }
