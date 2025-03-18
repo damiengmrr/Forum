@@ -7,10 +7,24 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <h1>Erreur - Inscription</h1>
-    <p>Un problème est survenu lors de l'inscription. <br> L'email est peut-être déjà utilisé.</p>
-    <br>
-    <a href="/register"><button>réessayer</button></a>
-    <a href="/home"><button>retour à l'accueil</button></a>
+    <div class="container">
+        <div class="form-container">
+            <div class="image-container">
+                <img src="../static/image/forum.png" alt="Inscription">
+            <h2>Erreur Inscription</h2>
+            <form action="/login" method="POST">
+                <label>erreur d'inscription</label>
+                <label>veuillez réessayez</label>
+                <label>Email déjà inscrit.</label>
+
+                
+            </form>
+
+            <p class="login-text">Pas encore inscrit ? <a href="/register">Créer un compte</a></p>
+            <a href="/home"><button>retour à l'accueil</button></a>
+            <a href="/login"><button>réessayer</button></a>
+        </div>
+        </div>
+    </div>
 </body>
 </html>

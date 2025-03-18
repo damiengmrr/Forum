@@ -7,12 +7,24 @@
     <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <h1>Erreur - Login<br></h1>
-    
-    <p>Le nom d'utilisateur ou le mot de passe est incorrect.<br> </p>
-    
-    <a href="/login"><button>réessayer</button></a>
-     
-    <a href="/home"><button>retour à l'accueil</button></a>
+    <div class="container">
+        <div class="form-container">
+            <div class="image-container">
+                <img src="../static/image/forum.png" alt="Inscription">
+            <h2>Erreur Connexion</h2>
+            <form action="/login" method="POST">
+                <label for="email">Email incorrect ou</label>
+
+                <label for="password">Mot de passe incorrect</label>
+
+                
+            </form>
+
+            <p class="login-text">Pas encore inscrit ? <a href="/register">Créer un compte</a></p>
+            <a href="/home"><button>retour à l'accueil</button></a>
+            <a href="/login"><button>réessayer</button></a>
+        </div>
+        </div>
+    </div>
 </body>
 </html>
