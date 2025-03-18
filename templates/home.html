@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum - Accueil</title>
-    <link rel="stylesheet" href="static/home.css">
+    <link rel="stylesheet" href="../static/home.css">
     <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 </head>
 <body>
@@ -42,24 +42,24 @@
     </section>
 
     <!-- Section des derniers posts -->
-    <section class="latest-posts">
-        <h2>Derniers Posts</h2>
-        <div class="post-list">
-            {{ range .Posts }}
-            <div class="post">
-                <h3>{{ .Title }}</h3>
-                <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
-                <p><strong>Catégorie :</strong> {{ .Category }}</p>
-                <p>{{ .Content }}</p>
-                <div class="post-actions">
-                    <button class="like-btn">👍 {{ .Likes }}</button>
-                    <button class="dislike-btn">👎 {{ .Dislikes }}</button>
-                    <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
-                </div>
+<section class="latest-posts">
+    <h2>Derniers Posts</h2>
+    <div class="post-list">
+        {{ range .Posts }}
+        <div class="post">
+            <h3>{{ .Content }}</h3>
+            <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
+            <p><strong>Catégorie :</strong> {{ .Category }}</p>
+            <p>{{ .Content }}</p>
+            <div class="post-actions">
+                <button class="like-btn">👍 {{ .Likes }}</button>
+                <button class="dislike-btn">👎 {{ .Dislikes }}</button>
+                <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
             </div>
-            {{ end }}
         </div>
-    </section>
+        {{ end }}
+    </div>
+</section>
 
     <footer>
         <p>&copy; 2025 MonForum - Tous droits réservés</p>

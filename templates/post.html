@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Title }} - MonForum</title>
+    <link rel="stylesheet" href="static/home.css">
+</head>
+<body>
+    <header>
+        <img src="../static/image/forum.png" width="70" height="auto">
+        <nav>
+            <ul>
+                <li><a href="/home">Accueil</a></li>
+                <li><a href="/categories">Catégories</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+        <a href="/account" class="account-btn">Mon Compte</a>
+    </header>
+
+    <section class="post-detail">
+        <h2>{{ .Title }}</h2>
+        <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
+        <p><strong>Catégorie :</strong> {{ .Category }}</p>
+        <p>{{ .Content }}</p>
+
+        <div class="post-actions">
+            <button class="like-btn">👍 {{ .Likes }}</button>
+            <button class="dislike-btn">👎 {{ .Dislikes }}</button>
+            <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
+        </div>
+    </section>
+
+    <!-- Section des commentaires -->
+    <section class="comments">
+        <h3>Commentaires</h3>
+        <div class="comment-list">
+            {{ range .Comments }}
+            <div class="comment">
+                <p><strong>{{ .Author }}</strong> a dit : </p>
+                <p>{{ .Content }}</p>
+            </div>
+            {{ end }}
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 MonForum - Tous droits réservés</p>
+    </footer>
+</body>
+</html>

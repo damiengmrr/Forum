@@ -3,12 +3,16 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
 	"forum/database"
+	"net/http"
 	//"github.com/gofrs/uuid"
-	"golang.org/x/crypto/bcrypt"
 	"html/template"
+	"golang.org/x/crypto/bcrypt"
 )
+
+func EchecHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "templates/echec.html")
+}
 
 // RegisterHandler gère l'inscription des utilisateurs
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +29,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if err != sql.ErrNoRows {
 			// Autre erreur de base de données
-			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			http.ServeFile(w, r, "templates/echec.html")
+			println(err)
 			return
 		}
 
@@ -65,7 +70,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if err != nil {
 			// Si une autre erreur se produit
-			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			http.ServeFile(w, r, "templates/echec.html")
+			println(err)
 			return
 		}
 
@@ -97,13 +103,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
-		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+		http.ServeFile(w, r, "templates/echec.html")
+		
 		return
 	}
 
-    tmpl.Execute(w, map[string]interface{}{
-        "Posts": database.Posts,
-    })
+	tmpl.Execute(w, database.Posts)
 }
 
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
