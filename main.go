@@ -25,7 +25,11 @@ func main() {
 	http.HandleFunc("/contact", handlers.ContactHandler)
 	http.HandleFunc("/categories", handlers.CategoriesHandler)
 
-	// Démarrer le serveur
-	fmt.Println("Serveur démarré sur : http://localhost:8080/home")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("Serveur démarré sur http://localhost:8080/home")
+
+	// Démarrage du serveur HTTP
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal("Erreur lors du démarrage du serveur:", err)
+	}
 }

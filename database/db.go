@@ -14,8 +14,24 @@ var DB *sql.DB
 func InitDB() {
 	var err error
 
-	// Connexion à MySQL (modifie les identifiants selon ton setup)
-	dsn := "root:root_password@tcp(localhost:3306)/mydb" // Remplace "root_password" par ton mot de passe et "mydb" par le nom de ta base de données
+	// Connexion initiale à MySQL sans spécifier la base de données
+	dsn := "root:root_password@tcp(localhost:3306)/" // Remplace "root_password" par ton mot de passe MySQL
+	tempDB, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal("Erreur de connexion à MySQL:", err)
+	}
+	defer tempDB.Close()
+
+	// Création de la base de données si elle n'existe pas
+	_, err = tempDB.Exec("CREATE DATABASE IF NOT EXISTS mydb")
+	if err != nil {
+		log.Fatal("Erreur lors de la création de la base de données:", err)
+	}
+
+	fmt.Println("✅ Base de données 'mydb' prête !")
+
+	// Connexion finale avec la base de données 'mydb'
+	dsn = "root:root_password@tcp(localhost:3306)/mydb"
 	DB, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal("Erreur de connexion à MySQL:", err)
@@ -26,19 +42,19 @@ func InitDB() {
 		log.Fatal("Impossible de se connecter à MySQL:", err)
 	}
 
-	fmt.Println("Connexion réussie à MySQL !")
+	fmt.Println("✅ Connexion réussie à MySQL !")
 
 	// Création de la table users si elle n'existe pas
 	statement, err := DB.Prepare(`
 		CREATE TABLE IF NOT EXISTS users (
-			id VARCHAR(36) PRIMARY KEY,  -- Utilisation d'un UUID pour l'ID
+			id VARCHAR(36) PRIMARY KEY,
 			username VARCHAR(255) NOT NULL,
 			email VARCHAR(255) UNIQUE NOT NULL,
 			password TEXT NOT NULL
 		)
 	`)
 	if err != nil {
-		log.Fatal("Erreur de préparation de la requête de création de table:", err)
+		log.Fatal("Erreur de création de table:", err)
 	}
 
 	_, err = statement.Exec()
