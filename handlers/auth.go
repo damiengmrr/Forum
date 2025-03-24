@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"forum/database"
 	"net/http"
+
 	//"github.com/gofrs/uuid"
 	"html/template"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,6 +19,8 @@ func EchecHandler(w http.ResponseWriter, r *http.Request) {
 // RegisterHandler gère l'inscription des utilisateurs
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
+		// Récupérer les informations du formulaire
+		username := r.FormValue("username")
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
@@ -41,16 +45,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Enregistrer l'utilisateur dans la base de données
-		_, err = database.DB.Exec("INSERT INTO users (email, password) VALUES (?, ?)", email, string(hashedPassword))
+		// Enregistrer l'utilisateur dans la base de données sans spécifier l'ID (ID généré automatiquement par MySQL)
+		_, err = database.DB.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, string(hashedPassword))
 		if err != nil {
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
 			return
 		}
 
+		// Afficher un message de succès
 		fmt.Fprintln(w, "Inscription réussie !")
 		return
 	} else {
+		// Si ce n'est pas une requête POST, afficher le formulaire d'inscription
 		http.ServeFile(w, r, "templates/register.html")
 	}
 }
@@ -100,15 +106,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Afficher la page d'accueil avec tous les posts
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/home.html")
-	if err != nil {
-		http.ServeFile(w, r, "templates/echec.html")
-		
+    tmpl, err := template.ParseFiles("templates/home.html")
+    if err != nil {
+        http.ServeFile(w, r, "templates/echec.html")
+			println(err)
 		return
-	}
+    }
 
-	tmpl.Execute(w, database.Posts)
+    // Envoyer tous les posts dans le template
+    //tmpl.Execute(w, database.Posts)
+	tmpl.Execute(w, posts) // Ici, on passe la slice globale "posts"
+	
 }
 
 func AccountHandler(w http.ResponseWriter, r *http.Request) {

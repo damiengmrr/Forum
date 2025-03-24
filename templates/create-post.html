@@ -1,33 +1,53 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer un Post</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Créer un Post</title>
+  <!-- Tu peux pointer vers un nouveau fichier CSS dédié ou réutiliser styles.css -->
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="icon" type="image/x-icon" href="../static/image/forum.png" />
 </head>
 <body>
-    <section id="create-post-form">
-        <img src="../static/image/forum.png" width="70" height="auto">
-        <h1>Créer un Nouveau Post</h1>
-        <form action="/create-post" method="POST">
-            <label for="author">Nom de l'Auteur</label>
-            <input type="text" name="author" id="author" required>
+  <section id="create-post-form">
+    <img src="../static/image/forum.png" width="70" height="auto" />
+    <h1>Créer un Nouveau Post</h1>
 
-            <label for="content">Contenu du Post</label>
-            <textarea name="content" id="content" required></textarea>
+    <!-- Important : multipart/form-data pour envoyer une image -->
+    <form action="/create-post" method="POST" enctype="multipart/form-data">
+      <!-- Champ pour le Titre -->
+      <label for="title">Titre du Post</label>
+      <input type="text" name="title" id="title" required />
 
-            <label for="category">Catégorie</label>
-            <select name="category" id="category" required>
-                <option value="discussion">Discussions Générales</option>
-                <option value="technology">Technologie</option>
-                <option value="gaming">Jeux Vidéo</option>
-                <option value="literature">Littérature</option>
-            </select>
+      <!-- Champ pour l'Auteur -->
+      <label for="author">Nom de l'Auteur</label>
+      <input type="text" name="author" id="author" required />
 
-            <button type="submit">Publier</button>
-        </form>
-    </section>
+      <!-- Champ pour l'Image -->
+      <label for="image">Image (JPEG, PNG ou GIF)</label>
+      <input
+        type="file"
+        name="image"
+        id="image"
+        accept="image/png, image/jpeg, image/gif"
+      />
+
+      <!-- Champ pour le Contenu -->
+      <label for="content">Contenu du Post</label>
+      <textarea name="content" id="content" rows="6" required></textarea>
+
+      <!-- Choix d'une ou plusieurs catégories -->
+      <!-- multiple pour en sélectionner plusieurs. À adapter si tu préfères un seul choix -->
+      <label for="categories">Catégories</label>
+      <select name="categories" id="categories" multiple required>
+        <option value="discussion">Discussions Générales</option>
+        <option value="technology">Technologie</option>
+        <option value="gaming">Jeux Vidéo</option>
+        <option value="literature">Littérature</option>
+      </select>
+
+      <button type="submit">Publier</button>
+    </form>
+  </section>
 </body>
 </html>

@@ -42,27 +42,44 @@
     </section>
 
     <!-- Section des derniers posts -->
-<section class="latest-posts">
-    <h2>Derniers Posts</h2>
-    <div class="post-list">
-        {{ range .Posts }}
-        <div class="post">
-            <h3>{{ .Content }}</h3>
-            <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
-            <p><strong>Catégorie :</strong> {{ .Category }}</p>
-            <p>{{ .Content }}</p>
-            <div class="post-actions">
-                <button class="like-btn">👍 {{ .Likes }}</button>
-                <button class="dislike-btn">👎 {{ .Dislikes }}</button>
-                <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
+    <section class="latest-posts">
+        <h2>Derniers Posts</h2>
+        <div class="post-list">
+            {{ range . }}
+            <div class="post">
+                <h3>{{ .Author }}</h3>
+                <h3>{{ .Title }}</h3>
+                <p><strong>Date:</strong> {{ .Date }}</p>
+                <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
+                {{ if .ImagePath }}
+                  <img src="{{ .ImagePath }}" alt="Image du post" class="post-image" />
+                {{ end }}
+                <p>{{ .Content }}</p>
+                <div class="post-actions">
+                    <form method="post" action="/like/{{ .ID }}">
+                        <button type="submit" class="like-btn">👍 {{ .Likes }}</button>
+                    </form>
+                    <form method="post" action="/dislike/{{ .ID }}">
+                        <button type="submit" class="dislike-btn">👎 {{ .Dislikes }}</button>
+                    </form>
+                    <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
+                </div>
             </div>
+            {{ end }}
         </div>
-        {{ end }}
-    </div>
-</section>
-
+    </section>
+    
     <footer>
         <p>&copy; 2025 MonForum - Tous droits réservés</p>
     </footer>
+    <script>
+        // Appel AJAX pour récupérer la date du serveur
+        fetch('/posts')
+            .then(response => response.text())
+            .then(data => {
+                // Afficher la date dans l'élément avec l'ID "post-date"
+                document.getElementById('post-date').innerText = data;
+            });
+    </script>
 </body>
 </html>

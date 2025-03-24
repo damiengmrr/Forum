@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ .Title }} - MonForum</title>
     <link rel="stylesheet" href="static/home.css">
+    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 </head>
 <body>
     <header>
@@ -20,18 +21,18 @@
     </header>
 
     <section class="post-detail">
-        <h2>{{ .Title }}</h2>
+        <h2>{{ .Title }}</h2> <!-- Titre du post -->
         <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
-        <p><strong>Catégorie :</strong> {{ .Category }}</p>
+        <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }}{{ end }}</p>
         <p>{{ .Content }}</p>
-
+    
         <div class="post-actions">
             <button class="like-btn">👍 {{ .Likes }}</button>
             <button class="dislike-btn">👎 {{ .Dislikes }}</button>
             <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
         </div>
     </section>
-
+    
     <!-- Section des commentaires -->
     <section class="comments">
         <h3>Commentaires</h3>

@@ -59,3 +59,50 @@ button:hover {
     margin-right: 20px;
     border-radius: 50%;
 }
+
+#create-post-form {
+    max-width: 600px;
+    margin: 80px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  #create-post-form h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  #create-post-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  #create-post-form label {
+    font-weight: bold;
+  }
+  
+  #create-post-form input,
+  #create-post-form textarea,
+  #create-post-form select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  #create-post-form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+  }
+  
+  #create-post-form button:hover {
+    background-color: #0056b3;
+  }
