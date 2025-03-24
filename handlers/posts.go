@@ -12,31 +12,49 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/exp/rand"
 )
 
 // Slice globale des posts utilisée pour l'affichage sur la page d'accueil
 var posts = []models.Post{
 	{
 		ID:         1,
-		Author:     "John",
-		Title:      "Test Post",
-		Content:    "Ceci est un post de test",
+		Author:     "admin",
+		Title:      "Pourquoi Golang c’est carré",
+		Content:    "J’vous jure, Go c’est trop propre wsh.",
 		Date:       time.Now(),
-		Likes:      5,
+		Likes:      10,
 		Dislikes:   2,
 		Categories: []string{"discussion"},
 		ImagePath:  "",
-	},
-	{
-		ID:         2,
-		Author:     "Alice",
-		Title:      "Technologie",
-		Content:    "Post sur la technologie",
-		Date:       time.Now(),
-		Likes:      8,
-		Dislikes:   1,
-		Categories: []string{"technology"},
-		ImagePath:  "",
+		Status:     "published",
+		Comments: []models.Comment{
+			{
+				ID:       1,
+				Author:   "Xx_D4rkL0rd_xX",
+				Avatar:   "/static/image/pfp1.png",
+				Content:  "Go c’est pour les darons qui codent en costard mdr",
+				Likes:    3,
+				Dislikes: 1,
+				Response: &models.Comment{
+					ID:       2,
+					Author:   "CodeBro_42",
+					Avatar:   "/static/image/pfp2.png",
+					Content:  "parle pas t’as un pfp manga et t’as raté ton bac",
+					Likes:    5,
+					Dislikes: 0,
+				},
+			},
+			{
+				ID:       3,
+				Author:   "ZebiLeClown",
+				Avatar:   "/static/image/pfp3.png",
+				Content:  "Go > Python, j’veux pas débattre",
+				Likes:    12,
+				Dislikes: 8,
+				Response: nil,
+			},
+		},
 	},
 }
 
@@ -52,8 +70,8 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tmpl, err := template.ParseFiles("templates/create-post.html")
 		if err != nil {
-			http.Error(w, "Erreur lors du chargement de la page", http.StatusInternalServerError)
-			return
+			http.ServeFile(w, r, "templates/echec.html")
+			fmt.Print(err)
 		}
 		tmpl.Execute(w, nil)
 		return
@@ -220,4 +238,133 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+func CommentReplyHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idStr := r.FormValue("id")
+	content := r.FormValue("content")
+	if idStr == "" || content == "" {
+		http.Error(w, "Champs manquants", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID invalide", http.StatusBadRequest)
+		return
+	}
+
+	for pi := range posts {
+		for ci := range posts[pi].Comments {
+			if posts[pi].Comments[ci].ID == id && posts[pi].Comments[ci].Response == nil {
+				posts[pi].Comments[ci].Response = &models.Comment{
+					ID:       rand.Intn(100000), // ID random simple
+					Author:   "Toi",
+					Avatar:   "/static/image/default.png",
+					Content:  content,
+					Likes:    0,
+					Dislikes: 0,
+				}
+				break
+			}
+		}
+	}
+
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+}
+// ici on gere le like d'un commentaire
+func CommentLikeHandler(w http.ResponseWriter, r *http.Request) {
+	// on recupere l'id du commentaire dans l'URL
+	idStr := r.URL.Query().Get("id")
+	id, _ := strconv.Atoi(idStr)
+
+	// on utilise un cookie pour savoir si l'utilisateur a deja vote
+	cookieName := fmt.Sprintf("comment_vote_%d", id)
+	vote := ""
+
+	// si le cookie existe deja, on le lit
+	if c, err := r.Cookie(cookieName); err == nil {
+		vote = c.Value
+	}
+
+	// on cherche dans tous les posts et leurs commentaires
+	for pi := range posts {
+		for ci := range posts[pi].Comments {
+			// si on trouve le commentaire
+			if posts[pi].Comments[ci].ID == id {
+				if vote == "like" {
+					// il a deja like → on fait rien
+				} else if vote == "dislike" {
+					// il avait dislike → on inverse
+					posts[pi].Comments[ci].Dislikes--
+					posts[pi].Comments[ci].Likes++
+				} else {
+					// il avait rien fait → on like
+					posts[pi].Comments[ci].Likes++
+				}
+				// on met à jour le cookie avec "like"
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "like", Path: "/"})
+			}
+
+			// si on like une réponse au commentaire
+			if posts[pi].Comments[ci].Response != nil && posts[pi].Comments[ci].Response.ID == id {
+				if vote == "like" {
+				} else if vote == "dislike" {
+					posts[pi].Comments[ci].Response.Dislikes--
+					posts[pi].Comments[ci].Response.Likes++
+				} else {
+					posts[pi].Comments[ci].Response.Likes++
+				}
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "like", Path: "/"})
+			}
+		}
+	}
+
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+}
+
+// ici on gere le dislike d'un commentaire
+func CommentDislikeHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, _ := strconv.Atoi(idStr)
+
+	cookieName := fmt.Sprintf("comment_vote_%d", id)
+	vote := ""
+
+	if c, err := r.Cookie(cookieName); err == nil {
+		vote = c.Value
+	}
+
+	for pi := range posts {
+		for ci := range posts[pi].Comments {
+			if posts[pi].Comments[ci].ID == id {
+				if vote == "dislike" {
+					// deja dislike → on fait rien
+				} else if vote == "like" {
+					posts[pi].Comments[ci].Likes--
+					posts[pi].Comments[ci].Dislikes++
+				} else {
+					posts[pi].Comments[ci].Dislikes++
+				}
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "dislike", Path: "/"})
+			}
+
+			if posts[pi].Comments[ci].Response != nil && posts[pi].Comments[ci].Response.ID == id {
+				if vote == "dislike" {
+				} else if vote == "like" {
+					posts[pi].Comments[ci].Response.Likes--
+					posts[pi].Comments[ci].Response.Dislikes++
+				} else {
+					posts[pi].Comments[ci].Response.Dislikes++
+				}
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "dislike", Path: "/"})
+			}
+		}
+	}
+
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }

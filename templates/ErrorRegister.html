@@ -2,30 +2,14 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erreur - Inscription</title>
-    <link rel="stylesheet" href="../static/styles.css">
-    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
+    <title>Erreur d'Inscription</title>
+    <link rel="stylesheet" href="/static/error.css">
 </head>
 <body>
-    <div class="container">
-        <div class="form-container">
-            <div class="image-container">
-                <img src="../static/image/forum.png" alt="Inscription">
-            <h2>Erreur Inscription</h2>
-            <form action="/login" method="POST">
-                <label>erreur d'inscription</label>
-                <label>veuillez réessayez</label>
-                <label>Email déjà inscrit.</label>
-
-                
-            </form>
-
-            <p class="login-text">Pas encore inscrit ? <a href="/register">Créer un compte</a></p>
-            <a href="/home"><button>retour à l'accueil</button></a>
-            <a href="/login"><button>réessayer</button></a>
-        </div>
-        </div>
+    <div class="error-container">
+        <h1>Erreur d'Inscription ❌</h1>
+        <p>L'adresse email est peut-être déjà utilisée.</p>
+        <a href="/register" class="btn">Retour</a>
     </div>
 </body>
 </html>

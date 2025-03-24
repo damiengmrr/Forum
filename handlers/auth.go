@@ -3,8 +3,11 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"forum/database"
+	"forum/models"
+	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	//"github.com/gofrs/uuid"
 	"html/template"
@@ -16,121 +19,176 @@ func EchecHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "templates/echec.html")
 }
 
-// RegisterHandler gère l'inscription des utilisateurs
+// on stocke la db ici une fois pour toutes
+var DB *sql.DB
+
+func SetDatabase(db *sql.DB) {
+	DB = db
+}
+
+// a appeler depuis main.go pour passer la base à ce fichier
+
+// ========================= REGISTER =========================
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		// Récupérer les informations du formulaire
-		username := r.FormValue("username")
-		email := r.FormValue("email")
+	if r.Method == http.MethodGet {
+		tmpl, _ := template.ParseFiles("templates/register.html")
+		tmpl.Execute(w, nil)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		username := strings.TrimSpace(r.FormValue("username"))
+		email := strings.TrimSpace(r.FormValue("email"))
 		password := r.FormValue("password")
 
-		// Vérifier si l'email existe déjà
-		var storedEmail string
-		err := database.DB.QueryRow("SELECT email FROM users WHERE email = ?", email).Scan(&storedEmail)
-		if err == nil {
-			// Si l'email existe déjà, redirige vers la page d'erreur
+		log.Println("Tentative inscription avec :", username, email)
+
+		if username == "" || email == "" || password == "" {
+			log.Println("Champs vides dans le formulaire")
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
-			return
-		} else if err != sql.ErrNoRows {
-			// Autre erreur de base de données
-			http.ServeFile(w, r, "templates/echec.html")
-			println(err)
 			return
 		}
 
-		// Hacher le mot de passe avant de l'enregistrer
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
+			log.Println("Erreur hash mot de passe:", err)
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
 			return
 		}
 
-		// Enregistrer l'utilisateur dans la base de données sans spécifier l'ID (ID généré automatiquement par MySQL)
-		_, err = database.DB.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, string(hashedPassword))
+		res, err := DB.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, string(hashedPassword))
 		if err != nil {
+			log.Println("Erreur SQL INSERT Register:", err)
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
 			return
 		}
 
-		// Afficher un message de succès
-		fmt.Fprintln(w, "Inscription réussie !")
-		return
-	} else {
-		// Si ce n'est pas une requête POST, afficher le formulaire d'inscription
-		http.ServeFile(w, r, "templates/register.html")
+		id, _ := res.LastInsertId()
+		log.Println("✅ User enregistré avec succès, ID =", id)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
 
-// LoginHandler gère la connexion des utilisateurs
+// ========================= LOGIN =========================
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == http.MethodGet {
+		tmpl, _ := template.ParseFiles("templates/login.html")
+		tmpl.Execute(w, nil)
+		return
+	}
+
+	if r.Method == http.MethodPost {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		// Vérifier si l'email existe
-		var storedHash string
-		err := database.DB.QueryRow("SELECT password FROM users WHERE email = ?", email).Scan(&storedHash)
-		if err == sql.ErrNoRows {
-			// Si l'email n'existe pas, redirige vers la page d'erreur
-			http.ServeFile(w, r, "templates/ErrorLogin.html")
-			return
-		} else if err != nil {
-			// Si une autre erreur se produit
-			http.ServeFile(w, r, "templates/echec.html")
-			println(err)
-			return
-		}
+		var id string
+		var username, hashedPassword string
 
-		// Vérifier si le mot de passe est correct
-		err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password))
+		// on récupère le user
+		err := DB.QueryRow("SELECT id, username, password FROM users WHERE email = ?", email).Scan(&id, &username, &hashedPassword)
 		if err != nil {
-			// Si le mot de passe est incorrect, redirige vers la page d'erreur
+			log.Println("Email inconnu :", err)
 			http.ServeFile(w, r, "templates/ErrorLogin.html")
 			return
 		}
 
-		// Création d'un cookie de session
+		// vérifie le mot de passe
+		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+		if err != nil {
+			log.Println("Mot de passe incorrect :", err)
+			http.ServeFile(w, r, "templates/ErrorLogin.html")
+			return
+		}
+
+		// crée le cookie de session
 		cookie := http.Cookie{
 			Name:  "session",
-			Value: email, // Simple pour le moment, à améliorer
+			Value: id,
 			Path:  "/",
 		}
 		http.SetCookie(w, &cookie)
 
-		// Redirection vers la page d'accueil après connexion réussie
-		http.Redirect(w, r, "/home", http.StatusFound)
-		return
-	} else {
-		// Si la méthode n'est pas POST, on affiche le formulaire de connexion
-		http.ServeFile(w, r, "templates/login.html")
+		log.Println("Connexion réussie pour", username)
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
 
 // Afficher la page d'accueil avec tous les posts
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-    tmpl, err := template.ParseFiles("templates/home.html")
-    if err != nil {
-        http.ServeFile(w, r, "templates/echec.html")
-			println(err)
-		return
-    }
+	id, username, err := GetCurrentUser(r)
 
-    // Envoyer tous les posts dans le template
-    //tmpl.Execute(w, database.Posts)
-	tmpl.Execute(w, posts) // Ici, on passe la slice globale "posts"
-	
+	if err != nil {
+		log.Println("Invité")
+	} else {
+		log.Println("Connecté :", username, "ID :", id)
+	}
+
+	// ici tu prepares les donnees a envoyer au template
+	data := struct {
+		Posts    []models.Post
+		Username string
+		LoggedIn bool
+	}{
+		Posts:    posts,
+		Username: username,
+		LoggedIn: err == nil,
+	}
+
+	// on affiche la page d'accueil
+	tmpl, err := template.ParseFiles("templates/home.html")
+	if err != nil {
+		http.Error(w, "erreur de template", http.StatusInternalServerError)
+		fmt.Print(err)
+		return
+	}
+	tmpl.Execute(w, data)
 }
 
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		http.ServeFile(w, r, "templates/account.html")
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
 	}
+
+	var username, email string
+	err = DB.QueryRow("SELECT username, email FROM users WHERE id = ?", cookie.Value).Scan(&username, &email)
+	if err != nil {
+		log.Println("Erreur récupération user dans /account :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	data := struct {
+		Username string
+		Email    string
+	}{
+		Username: username,
+		Email:    email,
+	}
+
+	tmpl, err := template.ParseFiles("templates/account.html")
+	if err != nil {
+		log.Println("Erreur template account :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	tmpl.Execute(w, data)
 }
 
+// ========================= LOGOUT =========================
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		http.ServeFile(w, r, "templates/logout.html")
+	// on supprime le cookie en le vidant
+	cookie := http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1, // ça le rend invalide
 	}
+	http.SetCookie(w, &cookie)
+
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func SettingsHandler(w http.ResponseWriter, r *http.Request) {
@@ -149,4 +207,31 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		http.ServeFile(w, r, "templates/categories.html")
 	}
+}
+
+// ========================= GET CURRENT USER =========================
+func GetCurrentUser(r *http.Request) (int, string, error) {
+	// on lit le cookie session
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return 0, "", fmt.Errorf("pas de session")
+	}
+
+	// on recupere l'id depuis le cookie
+	userID := cookie.Value
+
+	// on cherche le pseudo depuis la base
+	var username string
+	err = DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&username)
+	if err != nil {
+		return 0, "", fmt.Errorf("user introuvable")
+	}
+
+	// on convertit l'id texte -> int
+	id, err := strconv.Atoi(userID)
+	if err != nil {
+		return 0, "", fmt.Errorf("id invalide")
+	}
+
+	return id, username, nil
 }

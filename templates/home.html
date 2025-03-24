@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 </head>
 <body>
+
     <header>
         <img src="../static/image/forum.png" width="70" height="auto">
         <nav>
@@ -15,15 +16,31 @@
                 <li><a href="/home">Accueil</a></li>
                 <li><a href="/categories">Catégories</a></li>
                 <li><a href="/contact">Contact</a></li>
+                {{ if .LoggedIn }}
+                    <li><a href="/create-post">Créer un post</a></li>
+                {{ end }}
             </ul>
         </nav>
-        <a href="/account" class="account-btn">Mon Compte</a>
+    
+        <div class="user-zone">
+            {{ if .LoggedIn }}
+                <a href="/account" class="account-btn">👤 Mon Compte</a>
+                <a href="/logout" class="logout-btn">🚪</a>
+            {{ else }}
+                <a href="/login" class="account-btn">Connexion</a>
+            {{ end }}
+        </div>
     </header>
 
     <section class="hero">
-        <h1>Bienvenue sur MonForum</h1>
-        <p>Rejoignez la communauté et discutez avec d'autres passionnés !</p>
-        <a href="/register" class="btn">S'inscrire</a>
+        {{ if .LoggedIn }}
+            <h1>Bienvenue {{ .Username }} 👋</h1>
+            <p>Tu peux maintenant publier, liker, et commenter !</p>
+        {{ else }}
+            <h1>Bienvenue sur MonForum</h1>
+            <p>Rejoignez la communauté et discutez avec d'autres passionnés !</p>
+            <a href="/register" class="btn">S'inscrire</a>
+        {{ end }}
     </section>
 
     <section id="categories" class="categories">
@@ -36,14 +53,10 @@
         </div>
     </section>
 
-    <section class="hero">
-        <a href="/create-post" class="btn">Crée un post</a>
-    </section>
-
     <section class="latest-posts">
         <h2>Derniers Posts</h2>
         <div class="post-list">
-            {{ range . }}
+            {{ range .Posts }}
             <div class="post">
                 <h3>{{ .Author }}</h3>
                 <h3>{{ .Title }}</h3>
@@ -66,12 +79,6 @@
     <footer>
         <p>&copy; 2025 MonForum - Tous droits réservés</p>
     </footer>
-    <script>
-        fetch('/posts')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('post-date').innerText = data;
-            });
-    </script>
+    
 </body>
 </html>
