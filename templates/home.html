@@ -36,12 +36,10 @@
         </div>
     </section>
 
-    <!-- Bouton pour créer un nouveau post -->
     <section class="hero">
         <a href="/create-post" class="btn">Crée un post</a>
     </section>
 
-    <!-- Section des derniers posts -->
     <section class="latest-posts">
         <h2>Derniers Posts</h2>
         <div class="post-list">
@@ -56,12 +54,8 @@
                 {{ end }}
                 <p>{{ .Content }}</p>
                 <div class="post-actions">
-                    <form method="post" action="/like/{{ .ID }}">
-                        <button type="submit" class="like-btn">👍 {{ .Likes }}</button>
-                    </form>
-                    <form method="post" action="/dislike/{{ .ID }}">
-                        <button type="submit" class="dislike-btn">👎 {{ .Dislikes }}</button>
-                    </form>
+                    <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
+                    <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
                     <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
                 </div>
             </div>
@@ -73,11 +67,9 @@
         <p>&copy; 2025 MonForum - Tous droits réservés</p>
     </footer>
     <script>
-        // Appel AJAX pour récupérer la date du serveur
         fetch('/posts')
             .then(response => response.text())
             .then(data => {
-                // Afficher la date dans l'élément avec l'ID "post-date"
                 document.getElementById('post-date').innerText = data;
             });
     </script>

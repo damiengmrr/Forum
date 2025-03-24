@@ -21,19 +21,18 @@
     </header>
 
     <section class="post-detail">
-        <h2>{{ .Title }}</h2> <!-- Titre du post -->
+        <h2>{{ .Title }}</h2>
         <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
         <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }}{{ end }}</p>
         <p>{{ .Content }}</p>
     
         <div class="post-actions">
-            <button class="like-btn">👍 {{ .Likes }}</button>
-            <button class="dislike-btn">👎 {{ .Dislikes }}</button>
+            <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
+            <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
             <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
         </div>
     </section>
     
-    <!-- Section des commentaires -->
     <section class="comments">
         <h3>Commentaires</h3>
         <div class="comment-list">

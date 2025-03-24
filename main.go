@@ -30,11 +30,12 @@ func main() {
 	http.HandleFunc("/create-post", handlers.CreatePostHandler)
 	http.HandleFunc("/posts", handlers.TimeHandlers)
 	http.HandleFunc("/post/", handlers.PostHandler)
-	http.HandleFunc("/", handlers.EchecHandler)
 	http.HandleFunc("/echec", handlers.EchecHandler)
 	http.HandleFunc("/submit-post", handlers.CreatePostHandler)
-
-
+	http.HandleFunc("/like", handlers.LikeHandler)
+	http.HandleFunc("/dislike", handlers.DislikeHandler)
+	http.HandleFunc("/", handlers.EchecHandler)
+	
 	fmt.Println("Serveur démarré sur http://localhost:8080/home")
 
 	// Démarrage du serveur HTTP

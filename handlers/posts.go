@@ -151,3 +151,73 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl.Execute(w, post)
 }
+
+// LikeHandler gere le like d'un post avec limitation via cookies
+func LikeHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID invalide", http.StatusBadRequest)
+		return
+	}
+
+	cookieName := fmt.Sprintf("vote_post_%d", id)
+	voteCookie, err := r.Cookie(cookieName)
+	vote := ""
+	if err == nil {
+		vote = voteCookie.Value
+	}
+
+	for i := range posts {
+		if posts[i].ID == id {
+			if vote == "like" {
+				// déjà liké → rien
+			} else if vote == "dislike" {
+				posts[i].Dislikes--
+				posts[i].Likes++
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "like", Path: "/"})
+			} else {
+				posts[i].Likes++
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "like", Path: "/"})
+			}
+			break
+		}
+	}
+
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+// DislikeHandler gere le dislike d'un post avec limitation via cookies
+func DislikeHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "ID invalide", http.StatusBadRequest)
+		return
+	}
+
+	cookieName := fmt.Sprintf("vote_post_%d", id)
+	voteCookie, err := r.Cookie(cookieName)
+	vote := ""
+	if err == nil {
+		vote = voteCookie.Value
+	}
+
+	for i := range posts {
+		if posts[i].ID == id {
+			if vote == "dislike" {
+				// déjà disliké → rien
+			} else if vote == "like" {
+				posts[i].Likes--
+				posts[i].Dislikes++
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "dislike", Path: "/"})
+			} else {
+				posts[i].Dislikes++
+				http.SetCookie(w, &http.Cookie{Name: cookieName, Value: "dislike", Path: "/"})
+			}
+			break
+		}
+	}
+
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
