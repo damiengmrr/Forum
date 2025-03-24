@@ -47,7 +47,7 @@ func StartServer() {
 	http.HandleFunc("/categories", CategoriesHandler)
 	http.HandleFunc("/create-post", CreatePostHandler)
 	http.HandleFunc("/posts", TimeHandlers)
-	http.HandleFunc("/post/", PostHandler)
+	http.HandleFunc("/post/{id}", PostHandler)
 	http.HandleFunc("/echec", EchecHandler)
 	http.HandleFunc("/submit-post", CreatePostHandler)
 	http.HandleFunc("/comment/reply", CommentReplyHandler)

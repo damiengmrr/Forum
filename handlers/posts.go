@@ -19,9 +19,9 @@ import (
 var posts = []models.Post{
 	{
 		ID:         1,
-		Author:     "admin",
-		Title:      "Pourquoi Golang c’est carré",
-		Content:    "J’vous jure, Go c’est trop propre wsh.",
+		Author:     "NonoPrime",
+		Title:      "GNIEEEHHH",
+		Content:    "On sort à l'entrepôt Vendredi ?",
 		Date:       time.Now(),
 		Likes:      10,
 		Dislikes:   2,
@@ -31,33 +31,62 @@ var posts = []models.Post{
 		Comments: []models.Comment{
 			{
 				ID:       1,
-				Author:   "Xx_D4rkL0rd_xX",
+				Author:   "TetePrime",
 				Avatar:   "/static/image/pfp1.png",
-				Content:  "Go c’est pour les darons qui codent en costard mdr",
+				Content:  "Logique non ?",
 				Likes:    3,
 				Dislikes: 1,
 				Response: &models.Comment{
 					ID:       2,
-					Author:   "CodeBro_42",
+					Author:   "VavaPrime",
 					Avatar:   "/static/image/pfp2.png",
-					Content:  "parle pas t’as un pfp manga et t’as raté ton bac",
+					Content:  "Voilaaa théo",
 					Likes:    5,
 					Dislikes: 0,
 				},
 			},
 			{
 				ID:       3,
-				Author:   "ZebiLeClown",
+				Author:   "DadaPrime",
 				Avatar:   "/static/image/pfp3.png",
-				Content:  "Go > Python, j’veux pas débattre",
+				Content:  "Normal, jeudi MILK ?",
 				Likes:    12,
 				Dislikes: 8,
 				Response: nil,
 			},
 		},
 	},
+	{
+		ID:         1,
+		Author:     "les mentors à leurs prime",
+		Title:      "On vous voit hein !",
+		Content:    "Vous avez intérêt à rendre vos projets à temps !",
+		Date:       time.Now(),
+		Likes:      10,
+		Dislikes:   2,
+		Categories: []string{"discussion"},
+		ImagePath:  "",
+		Status:     "published",
+		Comments: []models.Comment{
+			{ 
+				ID:       1,
+				Author:   "TetePrime",
+				Avatar:   "/static/image/pfp1.png",
+				Content:  "tkt tkt",
+				Likes:    3,
+				Dislikes: 1,
+				Response: &models.Comment{
+					ID:       2,
+					Author:   "DadaPrime",
+					Avatar:   "/static/image/pfp2.png",
+					Content:  "Daronned sur forum carrement",
+					Likes:    5,
+					Dislikes: 0,
+				},
+			},
+			},
+},
 }
-
 // Handler pour afficher l'heure formatée
 func TimeHandlers(w http.ResponseWriter, r *http.Request) {
 	currentTime := time.Now()

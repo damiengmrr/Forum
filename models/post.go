@@ -25,3 +25,4 @@ type Post struct {
 	Status     string // "published", "draft", "abandoned"
 	Comments   []Comment
 }
+
