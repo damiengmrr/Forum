@@ -30,14 +30,14 @@ var posts = []models.Post{
 		Status:     "published",
 		Comments: []models.Comment{
 			{
-				ID:       1,
+				ID:       2,
 				Author:   "TetePrime",
 				Avatar:   "/static/image/pfp1.png",
 				Content:  "Logique non ?",
 				Likes:    3,
 				Dislikes: 1,
 				Response: &models.Comment{
-					ID:       2,
+					ID:       3,
 					Author:   "VavaPrime",
 					Avatar:   "/static/image/pfp2.png",
 					Content:  "Voilaaa théo",
@@ -46,7 +46,7 @@ var posts = []models.Post{
 				},
 			},
 			{
-				ID:       3,
+				ID:       4,
 				Author:   "DadaPrime",
 				Avatar:   "/static/image/pfp3.png",
 				Content:  "Normal, jeudi MILK ?",
@@ -57,7 +57,7 @@ var posts = []models.Post{
 		},
 	},
 	{
-		ID:         1,
+		ID:         5,
 		Author:     "les mentors à leurs prime",
 		Title:      "On vous voit hein !",
 		Content:    "Vous avez intérêt à rendre vos projets à temps !",
@@ -68,15 +68,15 @@ var posts = []models.Post{
 		ImagePath:  "",
 		Status:     "published",
 		Comments: []models.Comment{
-			{ 
-				ID:       1,
+			{
+				ID:       6,
 				Author:   "TetePrime",
 				Avatar:   "/static/image/pfp1.png",
 				Content:  "tkt tkt",
 				Likes:    3,
 				Dislikes: 1,
 				Response: &models.Comment{
-					ID:       2,
+					ID:       7,
 					Author:   "DadaPrime",
 					Avatar:   "/static/image/pfp2.png",
 					Content:  "Daronned sur forum carrement",
@@ -84,9 +84,10 @@ var posts = []models.Post{
 					Dislikes: 0,
 				},
 			},
-			},
-},
+		},
+	},
 }
+
 // Handler pour afficher l'heure formatée
 func TimeHandlers(w http.ResponseWriter, r *http.Request) {
 	currentTime := time.Now()
@@ -182,19 +183,32 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	// Récupère l'ID du post depuis l'URL (ex: /post/1)
 	idStr := r.URL.Path[len("/post/"):]
 	id, err := strconv.Atoi(idStr)
-	if err != nil || id <= 0 || id > len(posts) {
-		http.Error(w, "Post non trouvé", http.StatusNotFound)
-		return
+	if err != nil || id <= 0 {
+		http.ServeFile(w, r, "templates/echec.html")
+		fmt.Print(err)
 	}
 
 	// Récupère le post correspondant (les IDs commencent à 1)
-	post := posts[id-1]
+	var post models.Post
+	found := false
+	for _, p := range posts {
+		if p.ID == id {
+			post = p
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		http.ServeFile(w, r, "templates/echec.html")
+		fmt.Print(err)
+	}
 
 	// Charge et exécute le template du post
 	tmpl, err := template.ParseFiles("templates/post.html")
 	if err != nil {
-		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
-		return
+		http.ServeFile(w, r, "templates/echec.html")
+		fmt.Print(err)
 	}
 	tmpl.Execute(w, post)
 }
@@ -204,8 +218,8 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ID invalide", http.StatusBadRequest)
-		return
+		http.ServeFile(w, r, "templates/echec.html")
+		fmt.Print(err)
 	}
 
 	cookieName := fmt.Sprintf("vote_post_%d", id)
@@ -239,8 +253,8 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ID invalide", http.StatusBadRequest)
-		return
+		http.ServeFile(w, r, "templates/echec.html")
+		fmt.Print(err)
 	}
 
 	cookieName := fmt.Sprintf("vote_post_%d", id)
@@ -270,21 +284,19 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 func CommentReplyHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
-		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
-		return
+		http.ServeFile(w, r, "templates/echec.html")
 	}
 
 	idStr := r.FormValue("id")
 	content := r.FormValue("content")
 	if idStr == "" || content == "" {
-		http.Error(w, "Champs manquants", http.StatusBadRequest)
-		return
+		http.ServeFile(w, r, "templates/echec.html")
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "ID invalide", http.StatusBadRequest)
-		return
+		http.ServeFile(w, r, "templates/echec.html")
+		fmt.Print(err)
 	}
 
 	for pi := range posts {
@@ -305,6 +317,7 @@ func CommentReplyHandler(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }
+
 // ici on gere le like d'un commentaire
 func CommentLikeHandler(w http.ResponseWriter, r *http.Request) {
 	// on recupere l'id du commentaire dans l'URL

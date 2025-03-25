@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum - Accueil</title>
-    <link rel="stylesheet" href="../static/home.css">
-    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
+    <link rel="stylesheet" href="/static/home.css">
+    <link rel="icon" type="image/x-icon" href="/static/image/forum.png">
 </head>
 <body>
 
     <header>
-        <img src="../static/image/forum.png" width="70" height="auto">
+        <img src="/static/image/forum.png" width="70" height="auto">
         <nav>
             <ul>
                 <li><a href="/home">Accueil</a></li>
@@ -21,7 +21,7 @@
                 {{ end }}
             </ul>
         </nav>
-    
+
         <div class="user-info">
             {{ if .LoggedIn }}
                 <a href="/account" class="account-btn">👤 Mon Compte</a>
@@ -70,15 +70,17 @@
                     <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
                     <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
                     <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
+                    <!-- debug temporaire -->
+                    <p style="color: red; font-size: 0.8em;">ID: {{ .ID }}</p>
                 </div>
             </div>
             {{ end }}
         </div>
     </section>
-    
+
     <footer>
         <p>&copy; 2025 MonForum - Tous droits réservés</p>
     </footer>
-    
+
 </body>
 </html>
