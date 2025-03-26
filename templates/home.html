@@ -1,86 +1,83 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum - Accueil</title>
-    <link rel="stylesheet" href="/static/home.css">
-    <link rel="icon" type="image/x-icon" href="/static/image/forum.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forum - Accueil</title>
+  <link rel="stylesheet" href="/static/home.css" />
+  <link rel="icon" type="image/x-icon" href="/static/image/forum.png" />
 </head>
 <body>
 
-    <header>
-        <img src="/static/image/forum.png" width="70" height="auto">
-        <nav>
-            <ul>
-                <li><a href="/home">Accueil</a></li>
-                <li><a href="/categories">Catégories</a></li>
-                <li><a href="/contact">Contact</a></li>
-                {{ if .LoggedIn }}
-                    <li><a href="/create-post">Créer un post</a></li>
-                {{ end }}
-            </ul>
-        </nav>
-
-        <div class="user-info">
-            {{ if .LoggedIn }}
-                <a href="/account" class="account-btn">👤 Mon Compte</a>
-                <a href="/logout" class="logout-btn">🚪</a>
-            {{ else }}
-                <a href="/login" class="account-btn">Connexion</a>
-            {{ end }}
-        </div>
-    </header>
-
-    <section class="hero">
+  <header>
+    <img src="/static/image/forum.png" width="70" height="auto" />
+    <nav>
+      <ul>
+        <li><a href="/home">Accueil</a></li>
+        <li><a href="/categories">Catégories</a></li>
+        <li><a href="/contact">Contact</a></li>
         {{ if .LoggedIn }}
-            <h1>Bienvenue {{ .Username }} 👋</h1>
-            <p>Tu peux maintenant publier, liker, et commenter !</p>
-        {{ else }}
-            <h1>Bienvenue sur MonForum</h1>
-            <p>Rejoignez la communauté et discutez avec d'autres passionnés !</p>
-            <a href="/register" class="btn">S'inscrire</a>
+          <li><a href="/create-post">Créer un post</a></li>
         {{ end }}
-    </section>
+      </ul>
+    </nav>
+    <div class="user-info">
+      {{ if .LoggedIn }}
+        <a href="/account" class="account-btn">Mon Compte</a>
+        <a href="/logout" class="logout-btn">Déconnexion</a>
+      {{ else }}
+        <a href="/login" class="account-btn">Connexion</a>
+      {{ end }}
+    </div>
+  </header>
 
-    <section id="categories" class="categories">
-        <h2>Catégories populaires</h2>
-        <div class="category-list">
-            <div class="category">💬 Discussions Générales</div>
-            <div class="category">🖥️ Technologie</div>
-            <div class="category">🎮 Jeux Vidéo</div>
-            <div class="category">📚 Littérature</div>
+  <section class="hero">
+    {{ if .LoggedIn }}
+      <h1>Bienvenue {{ .Username }} 👋</h1>
+      <p>Tu peux maintenant publier, liker, et commenter !</p>
+    {{ else }}
+      <h1>Bienvenue sur MonForum</h1>
+      <p>Rejoignez la communauté et discutez avec d'autres passionnés !</p>
+      <a href="/register" class="btn">S'inscrire</a>
+    {{ end }}
+  </section>
+
+  <section id="categories" class="categories">
+    <h2>Catégories populaires</h2>
+    <div class="category-list">
+      <div class="category">💬 Discussions Générales</div>
+      <div class="category">🖥️ Technologie</div>
+      <div class="category">🎮 Jeux Vidéo</div>
+      <div class="category">📚 Littérature</div>
+    </div>
+  </section>
+
+  <section class="latest-posts">
+    <h2>Derniers Posts</h2>
+    <div class="post-list">
+      {{ range .Posts }}
+      <div class="post">
+        <h3>{{ .Author }}</h3>
+        <h3>{{ .Title }}</h3>
+        <p><strong>Date :</strong> {{ .FormattedDate }}</p>
+        <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
+        {{ if .ImagePath }}
+          <img src="{{ .ImagePath }}" alt="Image du post" class="post-image"/>
+        {{ end }}
+        <p>{{ .Content }}</p>
+        <div class="post-actions">
+          <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
+          <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
+          <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
         </div>
-    </section>
+      </div>
+      {{ end }}
+    </div>
+  </section>
 
-    <section class="latest-posts">
-        <h2>Derniers Posts</h2>
-        <div class="post-list">
-            {{ range .Posts }}
-            <div class="post">
-                <h3>{{ .Author }}</h3>
-                <h3>{{ .Title }}</h3>
-                <p><strong>Date:</strong> {{ .Date }}</p>
-                <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
-                {{ if .ImagePath }}
-                  <img src="{{ .ImagePath }}" alt="Image du post" class="post-image" />
-                {{ end }}
-                <p>{{ .Content }}</p>
-                <div class="post-actions">
-                    <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
-                    <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
-                    <a href="/post/{{ .ID }}" class="comment-btn">💬 Commentaires</a>
-                    <!-- debug temporaire -->
-                    <p style="color: red; font-size: 0.8em;">ID: {{ .ID }}</p>
-                </div>
-            </div>
-            {{ end }}
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 MonForum - Tous droits réservés</p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 MonForum - Tous droits réservés</p>
+  </footer>
 
 </body>
 </html>

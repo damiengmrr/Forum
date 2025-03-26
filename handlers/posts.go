@@ -26,7 +26,7 @@ var posts = []models.Post{
 		Likes:      10,
 		Dislikes:   2,
 		Categories: []string{"discussion"},
-		ImagePath:  "",
+		ImagePath:  "/static/image/primos.jpeg",
 		Status:     "published",
 		Comments: []models.Comment{
 			{
@@ -178,7 +178,6 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, nil)
 }
 
-// PostHandler affiche un post spécifique
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	// Récupère l'ID du post depuis l'URL (ex: /post/1)
 	idStr := r.URL.Path[len("/post/"):]
@@ -186,9 +185,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || id <= 0 {
 		http.ServeFile(w, r, "templates/echec.html")
 		fmt.Print(err)
+		return
 	}
 
-	// Récupère le post correspondant (les IDs commencent à 1)
+	// Récupère le post correspondant
 	var post models.Post
 	found := false
 	for _, p := range posts {
@@ -201,18 +201,29 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !found {
 		http.ServeFile(w, r, "templates/echec.html")
-		fmt.Print(err)
+		fmt.Print("Post non trouvé")
+		return
 	}
 
-	// Charge et exécute le template du post
+	// Charge le template
 	tmpl, err := template.ParseFiles("templates/post.html")
 	if err != nil {
 		http.ServeFile(w, r, "templates/echec.html")
 		fmt.Print(err)
+		return
 	}
-	tmpl.Execute(w, post)
-}
 
+	// Envoi de la structure avec la date formatée
+	data := struct {
+		Post          models.Post
+		FormattedDate string
+	}{
+		Post:          post,
+		FormattedDate: post.Date.Format("02 Jan 2006 à 15:04"),
+	}
+
+	tmpl.Execute(w, data)
+}
 // LikeHandler gere le like d'un post avec limitation via cookies
 func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")

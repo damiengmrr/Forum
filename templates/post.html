@@ -2,10 +2,16 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ .Title }} - MonForum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ .Post.Title }} - MonForum</title>
   <link rel="stylesheet" href="/static/home.css" />
   <link rel="icon" type="image/x-icon" href="/static/image/forum.png" />
+  <style>
+    .post-wrapper {
+      max-width: 800px;
+      margin: 50px auto; /* centrage + espacement haut */
+    }
+  </style>
 </head>
 <body>
 
@@ -18,92 +24,108 @@
         <li><a href="/contact">Contact</a></li>
       </ul>
     </nav>
-    <a href="/account" class="account-btn">Mon Compte</a>
+    <div class="user-info">
+      <a href="/account" class="account-btn">Mon Compte</a>
+    </div>
   </header>
 
-  <!-- Le post principal -->
-  <section class="post-detail">
-    <h2>{{ .Title }}</h2>
-    <p><strong>Par :</strong> {{ .Author }} | <strong>Date :</strong> {{ .Date }}</p>
-    <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
-    <p>{{ .Content }}</p>
-    <div class="post-actions">
-      <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
-      <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
-    </div>
-  </section>
+  <!-- Conteneur général du post et commentaires -->
+  <div class="post-wrapper">
+    
+    <!-- Le post -->
+    <section class="latest-posts">
+      <div class="post">
+        <h2>{{ .Post.Title }}</h2>
+        <p><strong>Par :</strong> {{ .Post.Author }} | <strong>Date :</strong> {{ .FormattedDate }}</p>
+        <p><strong>Catégorie :</strong> {{ range .Post.Categories }}{{ . }} {{ end }}</p>
+        
+        {{ if .Post.ImagePath }}
+          <img src="{{ .Post.ImagePath }}" alt="Image du post" class="post-image" />
+        {{ end }}
 
-  <!-- Les commentaires -->
-  <section class="comments">
-    <h3>Commentaires</h3>
-    <div class="comment-list">
-      {{ range .Comments }}
-      <div class="comment" data-comment-id="{{ .ID }}">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <img src="{{ .Avatar }}" alt="avatar" width="40" style="border-radius: 50%;" />
-          <strong>{{ .Author }}</strong>
+        <p>{{ .Post.Content }}</p>
+
+        <div class="post-actions">
+          <a href="/like?id={{ .Post.ID }}" class="like-btn">👍 {{ .Post.Likes }}</a>
+          <a href="/dislike?id={{ .Post.ID }}" class="dislike-btn">👎 {{ .Post.Dislikes }}</a>
         </div>
-        <p style="margin-top: 5px;">{{ .Content }}</p>
-        <div class="post-actions" style="margin-left: 50px;">
-          <a href="#" onclick="likeComment({{ .ID }})">👍 {{ .Likes }}</a>
-          <a href="#" onclick="dislikeComment({{ .ID }})">👎 {{ .Dislikes }}</a>
-          <a href="#" onclick="toggleReply({{ .ID }})">💬 Répondre</a>
-        </div>
-  
-        <div id="reply-box-{{ .ID }}" class="reply-box" style="display:none; margin-left: 50px; margin-top: 10px;">
-          <input type="text" id="reply-input-{{ .ID }}" placeholder="Ta réponse..." style="width: 80%; padding: 6px;" />
-          <button onclick="sendReply({{ .ID }})">Envoyer</button>
-        </div>
-  
-        {{ if .Response }}
-        <div class="comment response" style="margin-left: 50px; border-left: 2px solid #eee; padding-left: 15px; margin-top: 10px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="{{ .Response.Avatar }}" alt="avatar" width="35" style="border-radius: 50%;" />
-            <strong>{{ .Response.Author }}</strong>
+      </div>
+    </section>
+
+    <!-- Les commentaires -->
+    <section class="latest-posts" style="margin-top: 30px;">
+      <div class="post">
+        <h3>Commentaires</h3>
+        {{ range .Post.Comments }}
+          <div class="comment" style="margin-top: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <img src="{{ .Avatar }}" alt="avatar" width="40" style="border-radius: 50%;" />
+              <strong>{{ .Author }}</strong>
+            </div>
+            <p style="margin-top: 5px;">{{ .Content }}</p>
+            <div class="post-actions" style="margin-left: 50px;">
+              <a href="#" onclick="likeComment({{ .ID }})">👍 {{ .Likes }}</a>
+              <a href="#" onclick="dislikeComment({{ .ID }})">👎 {{ .Dislikes }}</a>
+              <a href="#" onclick="toggleReply({{ .ID }})">💬 Répondre</a>
+            </div>
+
+            <div id="reply-box-{{ .ID }}" class="reply-box" style="display:none; margin-left: 50px; margin-top: 10px;">
+              <input type="text" id="reply-input-{{ .ID }}" placeholder="Ta réponse..." style="width: 80%; padding: 6px;" />
+              <button onclick="sendReply({{ .ID }})">Envoyer</button>
+            </div>
+
+            {{ if .Response }}
+            <div class="comment response" style="margin-left: 50px; border-left: 2px solid #eee; padding-left: 15px; margin-top: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <img src="{{ .Response.Avatar }}" alt="avatar" width="35" style="border-radius: 50%;" />
+                <strong>{{ .Response.Author }}</strong>
+              </div>
+              <p style="margin-top: 5px;">{{ .Response.Content }}</p>
+              <div class="post-actions" style="margin-left: 45px;">
+                <a href="#" onclick="likeComment({{ .Response.ID }})">👍 {{ .Response.Likes }}</a>
+                <a href="#" onclick="dislikeComment({{ .Response.ID }})">👎 {{ .Response.Dislikes }}</a>
+              </div>
+            </div>
+            {{ end }}
           </div>
-          <p style="margin-top: 5px;">{{ .Response.Content }}</p>
-          <div class="post-actions" style="margin-left: 45px;">
-            <a href="#" onclick="likeComment({{ .Response.ID }})">👍 {{ .Response.Likes }}</a>
-            <a href="#" onclick="dislikeComment({{ .Response.ID }})">👎 {{ .Response.Dislikes }}</a>
-          </div>
-        </div>
+          <hr style="margin: 20px 0;" />
         {{ end }}
       </div>
-      <hr style="margin: 20px 0;" />
-      {{ end }}
-    </div>
-  </section>
+    </section>
+
+  </div>
 
   <footer>
     <p>&copy; 2025 MonForum - Tous droits réservés</p>
   </footer>
-</body>
-<script>
+
+  <script>
     function toggleReply(id) {
       const box = document.getElementById(`reply-box-${id}`);
       box.style.display = box.style.display === "none" ? "block" : "none";
     }
-  
+
     function sendReply(id) {
       const input = document.getElementById(`reply-input-${id}`);
       const content = input.value;
       if (content.trim() === "") return;
-  
+
       fetch("/comment/reply", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `id=${id}&content=${encodeURIComponent(content)}`
       }).then(() => {
-        location.reload(); // pour recharger avec la nouvelle réponse
+        location.reload();
       });
     }
-  
+
     function likeComment(id) {
       fetch(`/comment/like?id=${id}`).then(() => location.reload());
     }
-  
+
     function dislikeComment(id) {
       fetch(`/comment/dislike?id=${id}`).then(() => location.reload());
     }
   </script>
+</body>
 </html>

@@ -123,13 +123,27 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Connecté :", username, "ID :", id)
 	}
 
+	// nouvelle structure avec date formatée par post
+	type PostData struct {
+		models.Post
+		FormattedDate string
+	}
+
+	var postList []PostData
+	for _, p := range posts {
+		postList = append(postList, PostData{
+			Post:          p,
+			FormattedDate: p.Date.Format("02 Jan 2006 à 15:04"),
+		})
+	}
+
 	// ici tu prepares les donnees a envoyer au template
 	data := struct {
-		Posts    []models.Post
+		Posts    []PostData
 		Username string
 		LoggedIn bool
 	}{
-		Posts:    posts,
+		Posts:    postList,
 		Username: username,
 		LoggedIn: err == nil,
 	}
@@ -137,7 +151,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	// on affiche la page d'accueil
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
-		http.Error(w, "erreur de template", http.StatusInternalServerError)
+		http.ServeFile(w, r, "templates/echec.html")
 		fmt.Print(err)
 		return
 	}
