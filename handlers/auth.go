@@ -217,11 +217,6 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		http.ServeFile(w, r, "templates/categories.html")
-	}
-}
 
 // ========================= GET CURRENT USER =========================
 func GetCurrentUser(r *http.Request) (int, string, error) {

@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -83,6 +84,134 @@ var posts = []models.Post{
 					Likes:    5,
 					Dislikes: 0,
 				},
+			},
+		},
+	},
+	{
+		ID:         6,
+		Author:     "VavaPrime",
+		Title:      "Jeudi c'est sushi ou pizza ?",
+		Content:    "On va se poser chez tete ou on sort ?",
+		Date:       time.Now(),
+		Likes:      7,
+		Dislikes:   1,
+		Categories: []string{"discussion", "jeux vidéo"},
+		//ImagePath:  "/static/image/sushi_pizza.jpeg",
+		Status:     "published",
+		Comments: []models.Comment{
+			{
+				ID:       8,
+				Author:   "TetePrime",
+				Avatar:   "/static/image/pfp1.png",
+				Content:  "Pizza tqt",
+				Likes:    2,
+				Dislikes: 0,
+				Response: &models.Comment{
+					ID:       9,
+					Author:   "DadaPrime",
+					Avatar:   "/static/image/pfp2.png",
+					Content:  "Y'a toujours pizza chez tete",
+					Likes:    3,
+					Dislikes: 0,
+				},
+			},
+		},
+	},
+	{
+		ID:         7,
+		Author:     "Andy",
+		Title:      "Besoin d’un écran pour jouer les freres",
+		Content:    "Quelqu’un peut me prêter un écran ce week-end ?",
+		Date:       time.Now(),
+		Likes:      4,
+		Dislikes:   0,
+		Categories: []string{"technologie"},
+		//ImagePath:  "/static/image/ecran.jpeg",
+		Status:     "published",
+		Comments: []models.Comment{
+			{
+				ID:       10,
+				Author:   "NonoPrime",
+				Avatar:   "/static/image/pfp4.png",
+				Content:  "Passe à la maison j’en ai un",
+				Likes:    4,
+				Dislikes: 0,
+				Response: nil,
+			},
+		},
+	},
+	{
+		ID:         8,
+		Author:     "Emma",
+		Title:      "Qui vient au LAN samedi ?",
+		Content:    "Ramenez vos configs et votre bonne humeur",
+		Date:       time.Now(),
+		Likes:      11,
+		Dislikes:   1,
+		Categories: []string{"jeux vidéo"},
+		//ImagePath:  "/static/image/lanparty.jpeg",
+		Status:     "published",
+		Comments: []models.Comment{
+			{
+				ID:       11,
+				Author:   "Andy",
+				Avatar:   "/static/image/pfp5.png",
+				Content:  "J’amène de quoi boire ?",
+				Likes:    3,
+				Dislikes: 0,
+				Response: &models.Comment{
+					ID:       12,
+					Author:   "NonoPrime",
+					Avatar:   "/static/image/pfp4.png",
+					Content:  "Et ton setup stp 😭",
+					Likes:    2,
+					Dislikes: 0,
+				},
+			},
+		},
+	},
+	{
+		ID:         9,
+		Author:     "user0778702518",
+		Title:      "J'ai oublié le mot de passe Moodle...",
+		Content:    "Y'a moyen de reset ça sans passer par les mentors ?",
+		Date:       time.Now(),
+		Likes:      6,
+		Dislikes:   2,
+		ImagePath:  "/static/image/moodle.jpeg",
+		Categories: []string{"technologie", "discussion"},
+		Status:     "published",
+		Comments: []models.Comment{
+			{
+				ID:       13,
+				Author:   "DadaPrime",
+				Avatar:   "/static/image/pfp2.png",
+				Content:  "Tu cliques sur “Mot de passe oublié” champion",
+				Likes:    6,
+				Dislikes: 1,
+				Response: nil,
+			},
+		},
+	},
+	{
+		ID:         10,
+		Author:     "Lucas",
+		Title:      "Quelqu’un a le truc pour refaire sa carte ?",
+		Content:    "HELP marine vas me tuer",
+		Date:       time.Now(),
+		Likes:      5,
+		Dislikes:   0,
+		Categories: []string{"littérature"},
+		Status:     "published",
+		Comments: []models.Comment{
+			{
+				ID:       14,
+				Author:   "Marine",
+				Avatar:   "/static/image/pfp6.png",
+				Content:  "Je te l’envoie en DM tkt",
+				Likes:    4,
+				Dislikes: 0,
+				Response: nil,
 			},
 		},
 	},
@@ -224,6 +353,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.Execute(w, data)
 }
+
 // LikeHandler gere le like d'un post avec limitation via cookies
 func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
@@ -420,4 +550,37 @@ func CommentDislikeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+}
+
+// CategoryHandler affiche tous les posts d'une catégorie donnée (ex: /category/technologie)
+func CategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+
+	type TemplateData struct {
+		Categories       []string
+		SelectedCategory string
+		FilteredPosts    []models.Post
+	}
+
+	data := TemplateData{
+		Categories: []string{"discussion", "technologie", "jeux vidéo", "littérature"},
+	}
+
+	if name != "" {
+		data.SelectedCategory = name
+		for _, p := range posts {
+			for _, cat := range p.Categories {
+				if strings.ToLower(cat) == strings.ToLower(name) {
+					data.FilteredPosts = append(data.FilteredPosts, p)
+					break
+				}
+			}
+		}
+	}
+
+	err := template.Must(template.ParseFiles("templates/categories.html")).Execute(w, data)
+	if err != nil {
+		http.Error(w, "Erreur lors du rendu", http.StatusInternalServerError)
+		fmt.Println("Erreur template :", err)
+	}
 }

@@ -578,3 +578,37 @@ body {
     font-size: 0.9em;
     margin-top: 40px;
   }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    align-items: center;
+    margin-top: 30px;
+  }
+  
+  .post {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
+  
+  .post h3 {
+    margin: 5px 0;
+  }
+  
+  .post-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  
+  .post-actions {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+  }
