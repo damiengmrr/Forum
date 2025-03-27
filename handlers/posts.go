@@ -143,7 +143,7 @@ var posts = []models.Post{
 	{
 		ID:         8,
 		Author:     "Emma",
-		Title:      "Qui vient au LAN samedi ?",
+		Title:      "Qui vient à la LAN samedi ?",
 		Content:    "Ramenez vos configs et votre bonne humeur",
 		Date:       time.Now(),
 		Likes:      11,
@@ -186,7 +186,7 @@ var posts = []models.Post{
 				ID:       13,
 				Author:   "DadaPrime",
 				Avatar:   "/static/image/pfp2.png",
-				Content:  "Tu cliques sur “Mot de passe oublié” champion",
+				Content:  "BIG FAUX COMPTE LES FRERES",
 				Likes:    6,
 				Dislikes: 1,
 				Response: nil,
