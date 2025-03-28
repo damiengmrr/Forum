@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #1877f2;
+    color: white;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+}
+nav ul li {
+    margin: 0 15px;
+}
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+.account-btn {
+    background: white;
+    color: #1877f2;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.post-detail, .comments {
+    width: 60%;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.post-actions button, .comment-btn {
+    margin-right: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.like-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+.dislike-btn {
+    background-color: #f44336;
+    color: white;
+}
+.comment-btn {
+    background-color: #1877f2;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: inline-block;
+}
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #1877f2;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
