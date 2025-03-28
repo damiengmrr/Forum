@@ -13,11 +13,12 @@ func main() {
 	// Initialisation de la BDD
 	database.InitDB()
 
+	// Servir les fichiers statiques (si nécessaire)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// Routes
 	http.HandleFunc("/register", handlers.RegisterHandler)
-	http.HandleFunc("/login", handlers.LoginHandler)
+	//http.HandleFunc("/login", handlers.LoginHandler)
 	http.HandleFunc("/home", handlers.HomeHandler)
 	http.HandleFunc("/account", handlers.AccountHandler)
 	http.HandleFunc("/logout", handlers.LogoutHandler)
@@ -32,4 +33,5 @@ func main() {
 	if err != nil {
 		log.Fatal("Erreur lors du démarrage du serveur:", err)
 	}
+
 }

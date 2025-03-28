@@ -47,10 +47,11 @@ func InitDB() {
 	// Création de la table users si elle n'existe pas
 	statement, err := DB.Prepare(`
 		CREATE TABLE IF NOT EXISTS users (
-			id VARCHAR(36) PRIMARY KEY,
-			username VARCHAR(255) NOT NULL,
-			email VARCHAR(255) UNIQUE NOT NULL,
-			password TEXT NOT NULL
+			    id VARCHAR(36) PRIMARY KEY,
+    			username VARCHAR(100),
+    			email VARCHAR(100) UNIQUE,
+   				password VARCHAR(255)
+
 		)
 	`)
 	if err != nil {
@@ -65,27 +66,17 @@ func InitDB() {
 	fmt.Println("✅ Table 'users' prête !")
 }
 
-// // Fonction pour ajouter un utilisateur dans la base de données
-// func AddUser(id, username, email, password string) {
-// 	// Requête SQL d'insertion
-// 	query := `INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)`
+func AddUser(id, username, email, hashedPassword string) error {
+	query := `INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)`
 
-// 	// Exécution de la requête d'insertion
-// 	_, err := DB.Exec(query, id, username, email, password)
-// 	if err != nil {
-// 		log.Fatal("Erreur lors de l'insertion de l'utilisateur:", err)
-// 	}
-// 	fmt.Println("Utilisateur ajouté avec succès!")
-// }
+	_, err := DB.Exec(query, id, username, email, hashedPassword)
+	if err != nil {
+		log.Println("❌ Erreur lors de l'insertion de l'utilisateur :", err)
+		return err
+	}
 
-// func AddUser(id, username, email, password string) {
-//     fmt.Println("📌 Tentative d'ajout de l'utilisateur :", username, email)
+	// Log de succès
+	log.Printf("✅ Utilisateur ajouté : %s (%s)", username, email)
+	return nil
+}
 
-//     query := `INSERT INTO users (id, username, email, password) VALUES (?, ?, ?, ?)`
-
-//     _, err := DB.Exec(query, id, username, email, password)
-//     if err != nil {
-//         log.Fatal("Erreur lors de l'insertion de l'utilisateur:", err)
-//     }
-//     fmt.Println("✅ Utilisateur ajouté avec succès!")
-// }
