@@ -108,11 +108,18 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// on récupère l'utilisateur connecté
+	userID, username, err := GetCurrentUser(r)
+	if err != nil || userID == 0 {
+		log.Println("❌ utilisateur non connecté :", err)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
 	// méthode POST : traitement du formulaire
 	r.ParseMultipartForm(10 << 20)
 
 	title := r.FormValue("title")
-	author := r.FormValue("author")
 	content := r.FormValue("content")
 	categories := r.Form["categories"]
 	date := time.Now()
@@ -128,9 +135,9 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Println("Image enregistrée dans :", dst)
 	}
-
+log.Println("👤 Auteur du post :", username)
 	newPost := models.Post{
-		Author:     author,
+		Author:     username,
 		Title:      title,
 		Content:    content,
 		Categories: categories,
@@ -147,7 +154,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("🟢 Nouveau post créé :", title)
+	log.Println("🟢 Nouveau post créé par", username, ":", title)
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 

@@ -255,9 +255,15 @@ func GetCurrentUser(r *http.Request) (int, string, error) {
 	// on recupere l'id depuis le cookie
 	userID := cookie.Value
 
-	// on cherche le pseudo depuis la base
+	// on récupère correctement la base de données
+	db := database.GetDatabase()
+	if db == nil {
+		return 0, "", fmt.Errorf("base non initialisée")
+	}
+
+	// on cherche le pseudo dans la base
 	var username string
-	err = DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&username)
+	err = db.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&username)
 	if err != nil {
 		return 0, "", fmt.Errorf("user introuvable")
 	}
