@@ -49,7 +49,7 @@ func InsertReply(postID int, content, author string) error {
 	_, err = stmt.Exec(postID, author, content)
 	return err
 }
-func IncrementCommentLike(id int) error {
+func IncrementCommentLike(id int) error { 
 	db := GetDatabase()
 	_, err := db.Exec("UPDATE comments SET likes = likes + 1 WHERE id = ?", id)
 	return err
