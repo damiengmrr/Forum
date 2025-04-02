@@ -1,15 +1,20 @@
 package models
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type Comment struct {
-	ID       int
-	Author   string
-	Avatar   string
-	Content  string
-	Likes    int
-	Dislikes int
-	Response *Comment // une seule réponse max
+	ID         int
+	PostID     int
+	Author     string
+	Avatar     string
+	Content    string
+	Likes      int
+	Dislikes   int
+	ResponseTo sql.NullInt64
+	Response   *Comment
 }
 
 type Post struct {
@@ -22,7 +27,6 @@ type Post struct {
 	ImagePath  string
 	Likes      int
 	Dislikes   int
-	Status     string // "published", "draft", "abandoned"
+	Status     string
 	Comments   []Comment
 }
-

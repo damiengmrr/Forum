@@ -105,7 +105,7 @@
           <div class="post">
             <h3>{{ .Author }}</h3>
             <h3>{{ .Title }}</h3>
-            <p><strong>Date :</strong> {{ .Date.Format "02 Jan 2006 à 15:04" }}</p>
+            <p><strong>Date :</strong> {{ .FormattedDate }}</p>
             <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
             <p>{{ .Content }}</p>
             <div class="post-actions">

@@ -9,7 +9,55 @@
   <style>
     .post-wrapper {
       max-width: 800px;
-      margin: 50px auto; /* centrage + espacement haut */
+      margin: 50px auto;
+    }
+
+    .comment {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment img {
+      border-radius: 50%;
+    }
+
+    .comment .post-actions a {
+      margin-right: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .response {
+      background-color: #eef2f3;
+      margin-top: 10px;
+      padding: 10px;
+      border-left: 3px solid #ccc;
+      border-radius: 8px;
+      margin-left: 50px;
+    }
+
+    .reply-box {
+      margin-left: 50px;
+      margin-top: 10px;
+    }
+
+    .reply-box input {
+      width: 80%;
+      padding: 6px;
+    }
+
+    .reply-box button {
+      padding: 6px 12px;
+      margin-left: 10px;
     }
   </style>
 </head>
@@ -29,7 +77,6 @@
     </div>
   </header>
 
-  <!-- Conteneur général du post et commentaires -->
   <div class="post-wrapper">
     
     <!-- Le post -->
@@ -56,10 +103,14 @@
     <section class="latest-posts" style="margin-top: 30px;">
       <div class="post">
         <h3>Commentaires</h3>
+        {{ if not .Post.Comments }}
+          <p>Aucun commentaire.</p>
+        {{ end }}
+
         {{ range .Post.Comments }}
-          <div class="comment" style="margin-top: 20px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <img src="{{ .Avatar }}" alt="avatar" width="40" style="border-radius: 50%;" />
+          <div class="comment">
+            <div class="comment-header">
+              <img src="{{ .Avatar }}" alt="avatar" width="40" />
               <strong>{{ .Author }}</strong>
             </div>
             <p style="margin-top: 5px;">{{ .Content }}</p>
@@ -69,24 +120,26 @@
               <a href="#" onclick="toggleReply({{ .ID }})">💬 Répondre</a>
             </div>
 
-            <div id="reply-box-{{ .ID }}" class="reply-box" style="display:none; margin-left: 50px; margin-top: 10px;">
-              <input type="text" id="reply-input-{{ .ID }}" placeholder="Ta réponse..." style="width: 80%; padding: 6px;" />
-              <button onclick="sendReply({{ .ID }})">Envoyer</button>
-            </div>
-
+            <!-- Réponse textuelle -->
             {{ if .Response }}
-            <div class="comment response" style="margin-left: 50px; border-left: 2px solid #eee; padding-left: 15px; margin-top: 10px;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <img src="{{ .Response.Avatar }}" alt="avatar" width="35" style="border-radius: 50%;" />
+            <div class="response">
+              <div class="comment-header">
+                <img src="{{ .Response.Avatar }}" alt="avatar" width="35" />
                 <strong>{{ .Response.Author }}</strong>
               </div>
-              <p style="margin-top: 5px;">{{ .Response.Content }}</p>
+              <p>{{ .Response.Content }}</p>
               <div class="post-actions" style="margin-left: 45px;">
                 <a href="#" onclick="likeComment({{ .Response.ID }})">👍 {{ .Response.Likes }}</a>
                 <a href="#" onclick="dislikeComment({{ .Response.ID }})">👎 {{ .Response.Dislikes }}</a>
               </div>
             </div>
             {{ end }}
+
+            <!-- Boîte réponse -->
+            <div id="reply-box-{{ .ID }}" class="reply-box" style="display:none;">
+              <input type="text" id="reply-input-{{ .ID }}" placeholder="Ta réponse..." />
+              <button onclick="sendReply({{ .ID }})">Envoyer</button>
+            </div>
           </div>
           <hr style="margin: 20px 0;" />
         {{ end }}

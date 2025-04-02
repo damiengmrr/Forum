@@ -3,17 +3,21 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
+	"forum/database"
 	"forum/models"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
+
+	"github.com/gorilla/sessions"
 
 	//"github.com/gofrs/uuid"
 	"html/template"
 
 	"golang.org/x/crypto/bcrypt"
 )
+
+var store = sessions.NewCookieStore([]byte("super-secret-key"))
 
 func EchecHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "templates/echec.html")
@@ -31,40 +35,40 @@ func SetDatabase(db *sql.DB) {
 // ========================= REGISTER =========================
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
+		// si on ouvre la page pour la première fois, on affiche juste le formulaire
 		tmpl, _ := template.ParseFiles("templates/register.html")
 		tmpl.Execute(w, nil)
 		return
 	}
 
 	if r.Method == http.MethodPost {
-		username := strings.TrimSpace(r.FormValue("username"))
-		email := strings.TrimSpace(r.FormValue("email"))
+		// on récupère les infos du formulaire
+		username := r.FormValue("username")
+		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		log.Println("Tentative inscription avec :", username, email)
-
+		// si un des champs est vide → erreur
 		if username == "" || email == "" || password == "" {
-			log.Println("Champs vides dans le formulaire")
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
 			return
 		}
 
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		// on chiffre le mot de passe pour plus de sécurité
+		hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
-			log.Println("Erreur hash mot de passe:", err)
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
 			return
 		}
 
-		res, err := DB.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, string(hashedPassword))
+		// on enregistre le nouvel utilisateur dans la base
+		db := database.GetDatabase()
+		_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, string(hashedPwd))
 		if err != nil {
-			log.Println("Erreur SQL INSERT Register:", err)
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
 			return
 		}
 
-		id, _ := res.LastInsertId()
-		log.Println("✅ User enregistré avec succès, ID =", id)
+		// une fois inscrit → on redirige vers la page de connexion
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
@@ -81,81 +85,95 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		var id string
-		var username, hashedPassword string
+		db := database.GetDatabase()
+		if db == nil {
+			log.Println("❌ base non initialisée")
+			http.Redirect(w, r, "/echec", http.StatusSeeOther)
+			return
+		}
 
-		// on récupère le user
-		err := DB.QueryRow("SELECT id, username, password FROM users WHERE email = ?", email).Scan(&id, &username, &hashedPassword)
+		var username, hashedPassword string
+		err := db.QueryRow("SELECT username, password FROM users WHERE email = ?", email).
+			Scan(&username, &hashedPassword)
 		if err != nil {
-			log.Println("Email inconnu :", err)
+			log.Println("❌ Email inconnu :", err)
 			http.ServeFile(w, r, "templates/ErrorLogin.html")
 			return
 		}
 
-		// vérifie le mot de passe
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 		if err != nil {
-			log.Println("Mot de passe incorrect :", err)
+			log.Println("❌ Mot de passe incorrect :", err)
 			http.ServeFile(w, r, "templates/ErrorLogin.html")
 			return
 		}
 
-		// crée le cookie de session
-		cookie := http.Cookie{
-			Name:  "session",
-			Value: id,
+		// ✅ Cookie plus simple : on stocke juste le username
+		http.SetCookie(w, &http.Cookie{
+			Name:  "username",
+			Value: username,
 			Path:  "/",
-		}
-		http.SetCookie(w, &cookie)
+		})
 
-		log.Println("Connexion réussie pour", username)
+		log.Println("✅ Connexion réussie pour", username)
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	}
 }
 
+// structure avec le champ FormattedDate
+type PostWithFormattedDate struct {
+	models.Post
+	FormattedDate string
+}
+
 // Afficher la page d'accueil avec tous les posts
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	id, username, err := GetCurrentUser(r)
+	// on recupere le cookie username
+	cookie, err := r.Cookie("username")
+	username := "Invité"
+	if err == nil && cookie.Value != "" {
+		username = cookie.Value
+	}
 
+	// récupération des posts
+	rawPosts, err := database.GetAllPosts()
 	if err != nil {
-		log.Println("Invité")
-	} else {
-		log.Println("Connecté :", username, "ID :", id)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
 	}
 
-	// nouvelle structure avec date formatée par post
-	type PostData struct {
-		models.Post
-		FormattedDate string
-	}
-
-	var postList []PostData
-	for _, p := range posts {
-		postList = append(postList, PostData{
-			Post:          p,
-			FormattedDate: p.Date.Format("02 Jan 2006 à 15:04"),
+	// transformation avec la date formatée
+	var posts []PostWithFormattedDate
+	for _, post := range rawPosts {
+		posts = append(posts, PostWithFormattedDate{
+			Post:          post,
+			FormattedDate: post.Date.Format("02 Jan 2006 à 15:04"),
 		})
 	}
 
-	// ici tu prepares les donnees a envoyer au template
+	// données envoyées au HTML
 	data := struct {
-		Posts    []PostData
 		Username string
+		Posts    []PostWithFormattedDate
 		LoggedIn bool
 	}{
-		Posts:    postList,
 		Username: username,
-		LoggedIn: err == nil,
+		Posts:    posts,
+		LoggedIn: username != "Invité",
 	}
 
-	// on affiche la page d'accueil
+	// affichage
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
-		http.ServeFile(w, r, "templates/echec.html")
-		fmt.Print(err)
+		log.Println("Erreur template :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		return
 	}
-	tmpl.Execute(w, data)
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		log.Println("Erreur Execute :", err)
+	}
 }
 
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +234,6 @@ func ContactHandler(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "templates/contact.html")
 	}
 }
-
 
 // ========================= GET CURRENT USER =========================
 func GetCurrentUser(r *http.Request) (int, string, error) {

@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
+	"forum/database" 
 	"log"
 	"net/http"
 
@@ -16,10 +17,11 @@ func StartServer() {
 		log.Fatal("Erreur de connexion à la base :", err)
 	}
 
-	SetDatabase(db)
+	// Connexion globale pour tout le projet
+	database.SetDatabase(db)
 	log.Println("✅ Connexion à forum.db établie")
 
-	// BONUS DEBUG : on affiche tous les users actuels
+	// DEBUG : affichage utilisateurs
 	rows, err := db.Query("SELECT id, username, email FROM users")
 	if err != nil {
 		log.Println("❌ Erreur SELECT users au démarrage :", err)
@@ -47,7 +49,7 @@ func StartServer() {
 	http.HandleFunc("/categories", CategoriesHandler)
 	http.HandleFunc("/create-post", CreatePostHandler)
 	http.HandleFunc("/posts", TimeHandlers)
-	http.HandleFunc("/post/{id}", PostHandler)
+	http.HandleFunc("/post/", PostHandler)
 	http.HandleFunc("/echec", EchecHandler)
 	http.HandleFunc("/submit-post", CreatePostHandler)
 	http.HandleFunc("/comment/reply", CommentReplyHandler)
