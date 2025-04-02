@@ -49,7 +49,7 @@ func StartServer() {
 	http.HandleFunc("/categories", CategoriesHandler)
 	http.HandleFunc("/create-post", CreatePostHandler)
 	http.HandleFunc("/posts", TimeHandlers)
-	http.HandleFunc("/post/", PostHandler)
+	http.HandleFunc("/post", PostHandler)
 	http.HandleFunc("/echec", EchecHandler)
 	http.HandleFunc("/submit-post", CreatePostHandler)
 	http.HandleFunc("/comment/reply", CommentReplyHandler)
@@ -57,9 +57,18 @@ func StartServer() {
 	http.HandleFunc("/comment/dislike", CommentDislikeHandler)
 	http.HandleFunc("/like", LikeHandler)
 	http.HandleFunc("/dislike", DislikeHandler)
+	http.HandleFunc("/test-sessions", TestSessionHandler)
 	http.HandleFunc("/", EchecHandler)
 
 	// lancement serveur
-	fmt.Println("Serveur démarré sur http://localhost:8080/home")
+	//fmt.Println("Serveur démarré sur http://localhost:8080/home")
+	//log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("============================================")
+	fmt.Println("🚀 Lancement du serveur FORUM")
+	fmt.Println("🌐 Adresse : http://localhost:8080/home")
+	fmt.Println("✅ Statut  : EN LIGNE")
+	fmt.Println("📌 Pour arrêter : Ctrl + C")
+	fmt.Println("============================================")
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

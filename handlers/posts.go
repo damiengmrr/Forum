@@ -170,6 +170,7 @@ func LikeHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || userID == 0 {
 		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		fmt.Print(err)
+		fmt.Print(userID)
 		return
 	}
 

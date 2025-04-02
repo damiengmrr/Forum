@@ -92,9 +92,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		var id int
 		var username, hashedPassword string
-		err := db.QueryRow("SELECT username, password FROM users WHERE email = ?", email).
-			Scan(&username, &hashedPassword)
+
+		err := db.QueryRow("SELECT id, username, password FROM users WHERE email = ?", email).
+			Scan(&id, &username, &hashedPassword)
 		if err != nil {
 			log.Println("❌ Email inconnu :", err)
 			http.ServeFile(w, r, "templates/ErrorLogin.html")
@@ -108,10 +110,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// ✅ Cookie plus simple : on stocke juste le username
+		// ✅ Cookie pour le nom d'utilisateur
 		http.SetCookie(w, &http.Cookie{
 			Name:  "username",
 			Value: username,
+			Path:  "/",
+		})
+
+		// ✅ Cookie pour l'ID utilisateur (sous forme de string)
+		http.SetCookie(w, &http.Cookie{
+			Name:  "session",
+			Value: strconv.Itoa(id),
 			Path:  "/",
 		})
 

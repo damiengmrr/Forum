@@ -111,7 +111,7 @@
             <div class="post-actions">
               <a href="/like?id={{ .ID }}">👍 {{ .Likes }}</a>
               <a href="/dislike?id={{ .ID }}">👎 {{ .Dislikes }}</a>
-              <a href="/post/{{ .ID }}">💬 Commentaires</a>
+              <a href="/post?id={{ .ID }}">💬 Commentaires</a>
             </div>
           </div>
         {{ end }}

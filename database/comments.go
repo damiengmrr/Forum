@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"forum/models"
 	"log"
 )
@@ -49,7 +50,7 @@ func InsertReply(postID int, content, author string) error {
 	_, err = stmt.Exec(postID, author, content)
 	return err
 }
-func IncrementCommentLike(id int) error { 
+func IncrementCommentLike(id int) error {
 	db := GetDatabase()
 	_, err := db.Exec("UPDATE comments SET likes = likes + 1 WHERE id = ?", id)
 	return err
@@ -59,24 +60,33 @@ func IncrementCommentDislike(id int) error {
 	db := GetDatabase()
 	_, err := db.Exec("UPDATE comments SET dislikes = dislikes + 1 WHERE id = ?", id)
 	return err
+	
 }
 
 func ToggleCommentVote(userID, commentID int, voteType string) error {
 	db := GetDatabase()
 
-	var oldVote string
-	err := db.QueryRow("SELECT vote_type FROM votes_comments WHERE user_id = ? AND comment_id = ?", userID, commentID).Scan(&oldVote)
+	var current string
+	err := db.QueryRow("SELECT vote_type FROM votes_comments WHERE user_id = ? AND comment_id = ?", userID, commentID).Scan(&current)
 
 	if err == sql.ErrNoRows {
 		_, err = db.Exec("INSERT INTO votes_comments (user_id, comment_id, vote_type) VALUES (?, ?, ?)", userID, commentID, voteType)
 	} else if err == nil {
-		if oldVote == voteType {
+		if current == voteType {
 			_, err = db.Exec("DELETE FROM votes_comments WHERE user_id = ? AND comment_id = ?", userID, commentID)
 		} else {
 			_, err = db.Exec("UPDATE votes_comments SET vote_type = ? WHERE user_id = ? AND comment_id = ?", voteType, userID, commentID)
 		}
 	} else {
-		log.Println("❌ Erreur ToggleCommentVote :", err)
+		return err
+		fmt.Print(err)
 	}
+
+	// recalcul des totaux
+	var likes, dislikes int
+	db.QueryRow("SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'like'", commentID).Scan(&likes)
+	db.QueryRow("SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'dislike'", commentID).Scan(&dislikes)
+	_, err = db.Exec("UPDATE comments SET likes = ?, dislikes = ? WHERE id = ?", likes, dislikes, commentID)
+
 	return err
 }

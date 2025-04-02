@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"forum/models"
 	"log"
 	"strings"
@@ -114,6 +115,7 @@ func GetPostsSortedByDate() ([]models.Post, error) {
 	rows, err := db.Query("SELECT id, author, title, content, date, image_path, categories, likes, dislikes FROM posts ORDER BY date DESC")
 	if err != nil {
 		return nil, err
+		fmt.Print(err)
 	}
 	defer rows.Close()
 
@@ -135,23 +137,49 @@ func GetPostsSortedByDate() ([]models.Post, error) {
 
 	return posts, nil
 }
-
 func TogglePostVote(userID, postID int, voteType string) error {
 	db := GetDatabase()
 
 	var oldVote string
 	err := db.QueryRow("SELECT vote_type FROM votes_posts WHERE user_id = ? AND post_id = ?", userID, postID).Scan(&oldVote)
 
+	// Aucun vote encore → on insère +1
 	if err == sql.ErrNoRows {
-		_, err = db.Exec("INSERT INTO votes_posts (user_id, post_id, vote_type) VALUES (?, ?, ?)", userID, postID, voteType)
-	} else if err == nil {
-		if oldVote == voteType {
-			_, err = db.Exec("DELETE FROM votes_posts WHERE user_id = ? AND post_id = ?", userID, postID)
-		} else {
-			_, err = db.Exec("UPDATE votes_posts SET vote_type = ? WHERE user_id = ? AND post_id = ?", voteType, userID, postID)
+		_, err := db.Exec("INSERT INTO votes_posts (user_id, post_id, vote_type) VALUES (?, ?, ?)", userID, postID, voteType)
+		if err != nil {
+			return err
 		}
+		if voteType == "like" {
+			_, err = db.Exec("UPDATE posts SET likes = likes + 1 WHERE id = ?", postID)
+		} else {
+			_, err = db.Exec("UPDATE posts SET dislikes = dislikes + 1 WHERE id = ?", postID)
+		}
+		return err
+	}
+
+	// Même vote → on le retire
+	if oldVote == voteType {
+		_, err := db.Exec("DELETE FROM votes_posts WHERE user_id = ? AND post_id = ?", userID, postID)
+		if err != nil {
+			return err
+		}
+		if voteType == "like" {
+			_, err = db.Exec("UPDATE posts SET likes = likes - 1 WHERE id = ?", postID)
+		} else {
+			_, err = db.Exec("UPDATE posts SET dislikes = dislikes - 1 WHERE id = ?", postID)
+		}
+		return err
+	}
+
+	// Vote différent → on inverse
+	_, err = db.Exec("UPDATE votes_posts SET vote_type = ? WHERE user_id = ? AND post_id = ?", voteType, userID, postID)
+	if err != nil {
+		return err
+	}
+	if voteType == "like" {
+		_, err = db.Exec("UPDATE posts SET likes = likes + 1, dislikes = dislikes - 1 WHERE id = ?", postID)
 	} else {
-		log.Println("❌ Erreur TogglePostVote :", err)
+		_, err = db.Exec("UPDATE posts SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?", postID)
 	}
 	return err
 }

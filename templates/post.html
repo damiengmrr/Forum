@@ -1,3 +1,188 @@
+<!--<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ .Post.Title }} - MonForum</title>
+  <link rel="stylesheet" href="/static/home.css" />
+  <link rel="icon" type="image/x-icon" href="/static/image/forum.png" />
+  <style>
+    .post-wrapper {
+      max-width: 800px;
+      margin: 50px auto;
+    }
+
+    .comment {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment img {
+      border-radius: 50%;
+    }
+
+    .comment .post-actions a {
+      margin-right: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .response {
+      background-color: #eef2f3;
+      margin-top: 10px;
+      padding: 10px;
+      border-left: 3px solid #ccc;
+      border-radius: 8px;
+      margin-left: 50px;
+    }
+
+    .reply-box {
+      margin-left: 50px;
+      margin-top: 10px;
+    }
+
+    .reply-box input {
+      width: 80%;
+      padding: 6px;
+    }
+
+    .reply-box button {
+      padding: 6px 12px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="/static/image/forum.png" width="70" height="auto" />
+    <nav>
+      <ul>
+        <li><a href="/home">Accueil</a></li>
+        <li><a href="/categories">Catégories</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="user-info">
+      <a href="/account" class="account-btn">Mon Compte</a>
+    </div>
+  </header>
+
+  <div class="post-wrapper">
+    
+    <!-- Le post 
+    <section class="latest-posts">
+      <div class="post">
+        <h2>{{ .Post.Title }}</h2>
+        <p><strong>Par :</strong> {{ .Post.Author }} | <strong>Date :</strong> {{ .FormattedDate }}</p>
+        <p><strong>Catégorie :</strong> {{ range .Post.Categories }}{{ . }} {{ end }}</p>
+        
+        {{ if .Post.ImagePath }}
+          <img src="{{ .Post.ImagePath }}" alt="Image du post" class="post-image" />
+        {{ end }}
+
+        <p>{{ .Post.Content }}</p>
+
+        <div class="post-actions">
+          <a href="/like?id={{ .Post.ID }}" class="like-btn">👍 {{ .Post.Likes }}</a>
+          <a href="/dislike?id={{ .Post.ID }}" class="dislike-btn">👎 {{ .Post.Dislikes }}</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Les commentaires 
+    <section class="latest-posts" style="margin-top: 30px;">
+      <div class="post">
+        <h3>Commentaires</h3>
+        {{ if not .Post.Comments }}
+          <p>Aucun commentaire.</p>
+        {{ end }}
+
+        {{ range .Post.Comments }}
+          <div class="comment">
+            <div class="comment-header">
+              <img src="{{ .Avatar }}" alt="avatar" width="40" />
+              <strong>{{ .Author }}</strong>
+            </div>
+            <p style="margin-top: 5px;">{{ .Content }}</p>
+            <div class="post-actions" style="margin-left: 50px;">
+              <a href="#" onclick="likeComment({{ .ID }})">👍 {{ .Likes }}</a>
+              <a href="#" onclick="dislikeComment({{ .ID }})">👎 {{ .Dislikes }}</a>
+              <a href="#" onclick="toggleReply({{ .ID }})">💬 Répondre</a>
+            </div>
+
+            <!-- Réponse textuelle 
+            {{ if .Response }}
+            <div class="response">
+              <div class="comment-header">
+                <img src="{{ .Response.Avatar }}" alt="avatar" width="35" />
+                <strong>{{ .Response.Author }}</strong>
+              </div>
+              <p>{{ .Response.Content }}</p>
+              <div class="post-actions" style="margin-left: 45px;">
+                <a href="#" onclick="likeComment({{ .Response.ID }})">👍 {{ .Response.Likes }}</a>
+                <a href="#" onclick="dislikeComment({{ .Response.ID }})">👎 {{ .Response.Dislikes }}</a>
+              </div>
+            </div>
+            {{ end }}
+
+            <!-- Boîte réponse 
+            <div id="reply-box-{{ .ID }}" class="reply-box" style="display:none;">
+              <input type="text" id="reply-input-{{ .ID }}" placeholder="Ta réponse..." />
+              <button onclick="sendReply({{ .ID }})">Envoyer</button>
+            </div>
+          </div>
+          <hr style="margin: 20px 0;" />
+        {{ end }}
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>&copy; 2025 MonForum - Tous droits réservés</p>
+  </footer>
+
+  <script>
+    function toggleReply(id) {
+      const box = document.getElementById(`reply-box-${id}`);
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
+    function sendReply(id) {
+      const input = document.getElementById(`reply-input-${id}`);
+      const content = input.value;
+      if (content.trim() === "") return;
+
+      fetch("/comment/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `id=${id}&content=${encodeURIComponent(content)}`
+      }).then(() => {
+        location.reload();
+      });
+    }
+
+    function likeComment(id) {
+      fetch(`/comment/like?id=${id}`).then(() => location.reload());
+    }
+
+    function dislikeComment(id) {
+      fetch(`/comment/dislike?id=${id}`).then(() => location.reload());
+    }
+  </script>
+</body>
+</html>-->
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -115,8 +300,8 @@
             </div>
             <p style="margin-top: 5px;">{{ .Content }}</p>
             <div class="post-actions" style="margin-left: 50px;">
-              <a href="#" onclick="likeComment({{ .ID }})">👍 {{ .Likes }}</a>
-              <a href="#" onclick="dislikeComment({{ .ID }})">👎 {{ .Dislikes }}</a>
+              <a href="/comment/like?id={{ .ID }}">👍 {{ .Likes }}</a>
+              <a href="/comment/dislike?id={{ .ID }}">👎 {{ .Dislikes }}</a>
               <a href="#" onclick="toggleReply({{ .ID }})">💬 Répondre</a>
             </div>
 
@@ -129,8 +314,8 @@
               </div>
               <p>{{ .Response.Content }}</p>
               <div class="post-actions" style="margin-left: 45px;">
-                <a href="#" onclick="likeComment({{ .Response.ID }})">👍 {{ .Response.Likes }}</a>
-                <a href="#" onclick="dislikeComment({{ .Response.ID }})">👎 {{ .Response.Dislikes }}</a>
+                <a href="/comment/like?id={{ .Response.ID }}">👍 {{ .Response.Likes }}</a>
+                <a href="/comment/dislike?id={{ .Response.ID }}">👎 {{ .Response.Dislikes }}</a>
               </div>
             </div>
             {{ end }}
@@ -170,14 +355,6 @@
       }).then(() => {
         location.reload();
       });
-    }
-
-    function likeComment(id) {
-      fetch(`/comment/like?id=${id}`).then(() => location.reload());
-    }
-
-    function dislikeComment(id) {
-      fetch(`/comment/dislike?id=${id}`).then(() => location.reload());
     }
   </script>
 </body>
