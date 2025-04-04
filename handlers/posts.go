@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"forum/database"
 	"forum/models"
@@ -135,7 +136,7 @@ func CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Println("Image enregistrée dans :", dst)
 	}
-log.Println("👤 Auteur du post :", username)
+	log.Println("👤 Auteur du post :", username)
 	newPost := models.Post{
 		Author:     username,
 		Title:      title,
@@ -212,32 +213,47 @@ func DislikeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CommentReplyHandler(w http.ResponseWriter, r *http.Request) {
-	postIDStr := r.URL.Query().Get("id")
-	postID, err := strconv.Atoi(postIDStr)
-	if err != nil {
-		log.Println("❌ id commentaire invalide :", err)
+	userID, username, err := GetCurrentUser(r)
+	if err != nil || userID == 0 {
+		log.Println("❌ utilisateur non connecté")
 		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		return
+	}
+
+	// ID du post principal
+	postIDStr := r.FormValue("post_id")
+	postID, err := strconv.Atoi(postIDStr)
+	if err != nil {
+		log.Println("❌ id du post invalide")
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	// ID du commentaire auquel on répond (ou vide/null si c’est une réponse au post)
+	responseToStr := r.FormValue("response_to")
+	var responseTo sql.NullInt64
+	if responseToStr != "" {
+		responseID, err := strconv.Atoi(responseToStr)
+		if err == nil {
+			responseTo = sql.NullInt64{Int64: int64(responseID), Valid: true}
+		}
 	}
 
 	content := r.FormValue("content")
 	if content == "" {
-		log.Println("❌ contenu réponse vide")
+		log.Println("❌ contenu vide")
 		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		return
 	}
 
-	// exemple fixe de l'auteur (tu peux remplacer par session plus tard)
-	author := "Anonyme"
-
-	err = database.InsertReply(postID, content, author)
+	err = database.InsertComment(postID, username, content, responseTo)
 	if err != nil {
-		log.Println("❌ erreur insertion réponse :", err)
+		log.Println("❌ erreur insertion commentaire :", err)
 		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		return
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/post/%d", postID), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/post?id=%d", postID), http.StatusSeeOther)
 }
 
 func CommentLikeHandler(w http.ResponseWriter, r *http.Request) {

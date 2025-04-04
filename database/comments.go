@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/models"
 	"log"
 )
@@ -60,7 +59,7 @@ func IncrementCommentDislike(id int) error {
 	db := GetDatabase()
 	_, err := db.Exec("UPDATE comments SET dislikes = dislikes + 1 WHERE id = ?", id)
 	return err
-	
+
 }
 
 func ToggleCommentVote(userID, commentID int, voteType string) error {
@@ -79,7 +78,6 @@ func ToggleCommentVote(userID, commentID int, voteType string) error {
 		}
 	} else {
 		return err
-		fmt.Print(err)
 	}
 
 	// recalcul des totaux
@@ -88,5 +86,14 @@ func ToggleCommentVote(userID, commentID int, voteType string) error {
 	db.QueryRow("SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'dislike'", commentID).Scan(&dislikes)
 	_, err = db.Exec("UPDATE comments SET likes = ?, dislikes = ? WHERE id = ?", likes, dislikes, commentID)
 
+	return err
+}
+
+func InsertComment(postID int, author, content string, responseTo sql.NullInt64) error {
+	db := GetDatabase()
+	_, err := db.Exec(`
+		INSERT INTO comments (post_id, author, content, date, likes, dislikes, response_to)
+		VALUES (?, ?, ?, datetime('now'), 0, 0, ?)
+	`, postID, author, content, responseTo)
 	return err
 }
