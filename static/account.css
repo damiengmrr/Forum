@@ -1,0 +1,29 @@
+.account-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 30px;
+    border-radius: 8px;
+    background-color: #f8f8f8;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.account-container h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.account-container p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.account-container a {
+    display: inline-block;
+    margin-top: 20px;
+    color: white;
+    background-color: #333;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+}

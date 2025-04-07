@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Créer un Post</title>
+  <!-- Tu peux pointer vers un nouveau fichier CSS dédié ou réutiliser styles.css -->
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="icon" type="image/x-icon" href="../static/image/forum.png" />
+</head>
+<body>
+  <section id="create-post-form">
+    <img src="../static/image/forum.png" width="70" height="auto" />
+    <h1>Créer un Nouveau Post</h1>
+
+    <!-- Important : multipart/form-data pour envoyer une image -->
+    <form action="/create-post" method="POST" enctype="multipart/form-data">
+      <!-- Champ pour le Titre -->
+      <label for="title">Titre du Post</label>
+      <input type="text" name="title" id="title" required />
+
+      <!-- Champ pour l'Image -->
+      <label for="image">Image (JPEG, PNG ou GIF)</label>
+      <input
+        type="file"
+        name="image"
+        id="image"
+        accept="image/png, image/jpeg, image/gif"
+      />
+
+      <!-- Champ pour le Contenu -->
+      <label for="content">Contenu du Post</label>
+      <textarea name="content" id="content" rows="6" required></textarea>
+
+      <!-- Choix d'une ou plusieurs catégories -->
+      <!-- multiple pour en sélectionner plusieurs. À adapter si tu préfères un seul choix -->
+      <label for="categories">Catégories</label>
+      <select name="categories" id="categories" multiple required>
+        <option value="discussion">Discussions Générales</option>
+        <option value="technology">Technologie</option>
+        <option value="gaming">Jeux Vidéo</option>
+        <option value="literature">Littérature</option>
+      </select>
+
+      <button type="submit">Publier</button>
+      <a href="/home" style="
+          padding: 10px 20px;
+          background-color: #e74c3c;
+          color: white;
+          text-decoration: none;
+          text-align: center;
+          border-radius: 5px;
+        ">Annuler</a>
+    </form>
+  </section>
+</body>
+</html>
