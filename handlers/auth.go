@@ -184,7 +184,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Erreur Execute :", err)
 	}
 }
-
+/*
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
@@ -216,8 +216,40 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, data)
-}
+}*/
+func AccountHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 
+	db := database.GetDatabase() // ✅ récupère la bonne connexion
+	var username, email string
+	err = db.QueryRow("SELECT username, email FROM users WHERE id = ?", cookie.Value).Scan(&username, &email)
+	if err != nil {
+		log.Println("Erreur récupération user dans /account :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	data := struct {
+		Username string
+		Email    string
+	}{
+		Username: username,
+		Email:    email,
+	}
+
+	tmpl, err := template.ParseFiles("templates/account.html")
+	if err != nil {
+		log.Println("Erreur template account :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	tmpl.Execute(w, data)
+}
 // ========================= LOGOUT =========================
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	// on supprime le cookie en le vidant

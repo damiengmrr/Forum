@@ -65,7 +65,7 @@ func StartServer() {
 	//log.Fatal(http.ListenAndServe(":8080", nil))
 	fmt.Println("============================================")
 	fmt.Println("🚀 Lancement du serveur FORUM")
-	fmt.Println("🌐 Adresse : http://localhost:8080/home")
+	fmt.Println("🌐 Adresse : http://localhost:8080/account")
 	fmt.Println("✅ Statut  : EN LIGNE")
 	fmt.Println("📌 Pour arrêter : Ctrl + C")
 	fmt.Println("============================================")
