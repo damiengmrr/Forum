@@ -4,16 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact</title>
-    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/contact.css">
     <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
 </head>
 <body>
     <div class="container">
-        <div class="form-container">
-            <h2>Contact</h2>
+        <h1>Contactez-nous</h1>
+        <p>Une question ? Un problème ? Notre équipe est là pour vous répondre.</p>
 
-            <a href="../templates/home.html"><button>retour à l'accueil</button></a>
+        <div class="team">
+            <h2>Notre équipe</h2>
+            <ul>
+                <li>👨‍💻  Damien - Apprenti développeur web</li>
+                <li>👨‍💻  Theo - Apprenti développeur web</li>
+                <li>👨‍💻  Noah - Apprenti développeur web</li>
+                <li>👨‍💻  Sophie - Marketing</li>
+            </ul>
         </div>
+
+        <div class="email">
+            <h2>Notre email</h2>
+            <p>📩 forum.prime@gmail.com</p>
+        </div>
+
+        <div class="contact-form">
+            <h2>Envoyez-nous un message</h2>
+            <form>
+                <input type="text" name="nom" placeholder="Votre nom" required>
+                <input type="email" name="email" placeholder="Votre email" required>
+                <textarea name="message" placeholder="Votre message" required></textarea>
+                <button type="submit">Envoyer</button>
+            </form>
+        </div>
+            <a href="/home" class="retour">Retour à l'accueil</a>
     </div>
 </body>
 </html>

@@ -1,18 +1,129 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catégories</title>
-    <link rel="stylesheet" href="../static/styles.css">
-    <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
+  <meta charset="UTF-8" />
+  <title>Catégories - MonForum</title>
+  <link rel="stylesheet" href="/static/home.css" />
+  <link rel="icon" type="image/x-icon" href="/static/image/forum.png" />
+  <style>
+    .category-menu {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 40px;
+    }
+
+    .category {
+      background-color: #eaf6ff;
+      color: #3498db;
+      padding: 10px 16px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 0.95em;
+      text-decoration: none;
+      margin: 0 8px;
+      display: inline-block;
+    }
+
+    .category:hover {
+      background-color: #d1ecff;
+    }
+
+    .filtered-section {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .filtered-section h2 {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .post {
+      background-color: white;
+      padding: 20px;
+      margin-bottom: 40px;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    }
+
+    .post h3 {
+      margin: 5px 0;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .post-actions a {
+      text-decoration: none;
+      color: #333;
+      font-size: 0.95em;
+    }
+
+    .no-post {
+      text-align: center;
+      font-style: italic;
+      color: #888;
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-container">
-            <h2>Catégories</h2>
-            <a href="../templates/home.html"><button>retour à l'accueil</button></a>
-        </div>
-    </div>
+
+<header>
+  <img src="/static/image/forum.png" width="70" height="auto" />
+  <nav>
+    <ul>
+      <li><a href="/home">Accueil</a></li>
+      <li><a href="/categories">Catégories</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </nav>
+  <a href="/account" class="account-btn">Mon Compte</a>
+</header>
+
+<section class="hero">
+  <h1>Choisis une catégorie</h1>
+</section>
+
+<!-- Menu de sélection -->
+<section class="category-menu">
+    {{ range .Categories }}
+    <a href="/categories?name={{ . }}" class="category">{{ . }}</a>
+  {{ end }}
+</section>
+
+<!-- Posts filtrés -->
+<section class="latest-posts filtered-section">
+    {{ if .SelectedCategory }}
+      <h2>Posts dans la catégorie : {{ .SelectedCategory }}</h2>
+  
+      {{ if .FilteredPosts }}
+        {{ range .FilteredPosts }}
+          <div class="post">
+            <h3>{{ .Author }}</h3>
+            <h3>{{ .Title }}</h3>
+            <p><strong>Date :</strong> {{ .FormattedDate }}</p>
+            <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
+            <p>{{ .Content }}</p>
+            <div class="post-actions">
+              <a href="/like?id={{ .ID }}">👍 {{ .Likes }}</a>
+              <a href="/dislike?id={{ .ID }}">👎 {{ .Dislikes }}</a>
+              <a href="/post?id={{ .ID }}">💬 Commentaires</a>
+            </div>
+          </div>
+        {{ end }}
+      {{ else }}
+        <p class="no-post">Aucun post trouvé dans cette catégorie.</p>
+      {{ end }}
+    {{ end }}
+  </section>
+
+<footer>
+  <p>&copy; 2025 MonForum - Tous droits réservés</p>
+</footer>
+
 </body>
 </html>

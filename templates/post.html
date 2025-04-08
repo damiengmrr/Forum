@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ .Post.Title }} - MonForum</title>
+  <link rel="stylesheet" href="/static/home.css" />
+  <link rel="icon" type="image/x-icon" href="/static/image/forum.png" />
+  <style>
+    .post-wrapper {
+      max-width: 800px;
+      margin: 50px auto;
+    }
+
+    .comment {
+      margin-top: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comment img {
+      border-radius: 50%;
+    }
+
+    .comment .post-actions a {
+      margin-right: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .response {
+      background-color: #eef2f3;
+      margin-top: 10px;
+      padding: 10px;
+      border-left: 3px solid #ccc;
+      border-radius: 8px;
+      margin-left: 50px;
+    }
+
+    .reply-box {
+      margin-left: 50px;
+      margin-top: 10px;
+    }
+
+    .reply-box input {
+      width: 80%;
+      padding: 6px;
+    }
+
+    .reply-box button {
+      padding: 6px 12px;
+      margin-left: 10px;
+    }
+    .comment-form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 40px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      max-width: 800px;
+    }
+    
+    .comment-form h3 {
+      margin-bottom: 15px;
+      font-size: 18px;
+      color: #444;
+    }
+    
+    .comment-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .comment-input input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .comment-input button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .comment-input button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="/static/image/forum.png" width="70" height="auto" />
+    <nav>
+      <ul>
+        <li><a href="/home">Accueil</a></li>
+        <li><a href="/categories">Catégories</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="user-info">
+      <a href="/account" class="account-btn">Mon Compte</a>
+    </div>
+  </header>
+
+  <div class="post-wrapper">
+
+    <!-- Le post -->
+    <section class="latest-posts">
+      <div class="post">
+        <h2>{{ .Post.Title }}</h2>
+        <p><strong>Par :</strong> {{ .Post.Author }} | <strong>Date :</strong> {{ .FormattedDate }}</p>
+        <p><strong>Catégorie :</strong> {{ range .Post.Categories }}{{ . }} {{ end }}</p>
+        
+        {{ if .Post.ImagePath }}
+          <img src="{{ .Post.ImagePath }}" alt="Image du post" class="post-image" />
+        {{ end }}
+  
+        <p>{{ .Post.Content }}</p>
+  
+        <div class="post-actions">
+          <a href="/like?id={{ .Post.ID }}" class="like-btn">👍 {{ .Post.Likes }}</a>
+          <a href="/dislike?id={{ .Post.ID }}" class="dislike-btn">👎 {{ .Post.Dislikes }}</a>
+        </div>
+        {{ if .IsAuthor }}
+          <a href="/delete-post?id={{ .Post.ID }}" class="delete-btn">🗑️ Supprimer le post</a>
+        {{ end }}
+      </div>
+    </section>
+  
+    <!--Ajouter un commentaire-->
+    <div class="comment-form">
+      <h3>💬 Ajouter un commentaire</h3>
+      <div class="comment-input">
+        <input type="text" id="reply-input-post" placeholder="Écris ton message ici..." />
+        <button onclick="sendReply(null, {{ .Post.ID }})">Envoyer</button>
+      </div>
+    </div>
+  
+    <!-- Les commentaires -->
+    <section class="latest-posts" style="margin-top: 30px;">
+      <div class="post">
+        <h3>Commentaires</h3>
+        {{ if not .Post.Comments }}
+          <p>Aucun commentaire.</p>
+        {{ end }}
+  
+        {{ range .Post.Comments }}
+          <div class="comment">
+            <div class="comment-header">
+              <img src="{{ .Avatar }}" alt="avatar" width="40" />
+              <strong>{{ .Author }}</strong>
+            </div>
+            <p style="margin-top: 5px;">{{ .Content }}</p>
+            <div class="post-actions" style="margin-left: 50px;">
+              <a href="/comment/like?id={{ .ID }}">👍 {{ .Likes }}</a>
+              <a href="/comment/dislike?id={{ .ID }}">👎 {{ .Dislikes }}</a>
+              <a href="#" onclick="toggleReply({{ .ID }})">💬 Répondre</a>
+            </div>
+  
+            {{ if .Response }}
+            <div class="response">
+              <div class="comment-header">
+                <img src="{{ .Response.Avatar }}" alt="avatar" width="35" />
+                <strong>{{ .Response.Author }}</strong>
+              </div>
+              <p>{{ .Response.Content }}</p>
+              <div class="post-actions" style="margin-left: 45px;">
+                <a href="/comment/like?id={{ .Response.ID }}">👍 {{ .Response.Likes }}</a>
+                <a href="/comment/dislike?id={{ .Response.ID }}">👎 {{ .Response.Dislikes }}</a>
+              </div>
+            </div>
+            {{ end }}
+  
+            <div id="reply-box-{{ .ID }}" class="reply-box" style="display:none;">
+              <input type="text" id="reply-input-{{ .ID }}" placeholder="Ta réponse..." />
+              <button onclick="sendReply({{ .ID }}, {{ $.Post.ID }})">Envoyer</button>
+            </div>
+          </div>
+          <hr style="margin: 20px 0;" />
+        {{ end }}
+      </div>
+    </section>
+  
+  </div>
+
+  <footer>
+    <p>&copy; 2025 MonForum - Tous droits réservés</p>
+  </footer>
+
+  <script>
+    function toggleReply(id) {
+      const box = document.getElementById(`reply-box-${id}`);
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    }
+
+    function sendReply(commentID, postID) {
+      const inputID = commentID ? `reply-input-${commentID}` : `reply-input-post`;
+      const input = document.getElementById(inputID);
+      const content = input.value;
+      if (content.trim() === "") return;
+    
+      const body = new URLSearchParams();
+      body.append("post_id", postID);
+      body.append("content", content);
+      if (commentID) {
+        body.append("response_to", commentID);
+      }
+    
+      fetch("/comment/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString()
+      }).then(() => {
+        location.reload();
+      });
+    }
+  </script>
+</body>
+</html>

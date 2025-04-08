@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription</title>
-    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
     <link rel="icon" type="image/x-icon" href="../static/image/forum.png">
-</head>     
+</head>
 <body>
-    <body>
-        <div class="container">
+    <div class="container">
         <div class="image-container">
-          <img src="../static/image/forum.png" alt="Inscription">
+            <img src="../static/image/forum.png" alt="Inscription">
             <h2>Inscription</h2>
             <form action="/register" method="POST">
                 <label for="username">Nom d'utilisateur :</label>
@@ -27,12 +26,6 @@
             </form>
             <p class="login-text">Déjà un compte ? <a href="../templates/login.html">Se connecter</a></p>
         </div>
-        <script>
-            document.querySelector("form").addEventListener("submit", function(event) {
-                event.preventDefault();
-                window.location.href = "../templates/home.html"; 
-            });
-        </script>
-    </form>
+    </div>
 </body>
 </html>

@@ -1,0 +1,630 @@
+/* CSS de base 
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #fafafa;
+    color: #333;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header img {
+    max-height: 50px;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.account-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.account-btn:hover {
+    background-color: #0056b3;
+}
+
+.hero {
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 50px 20px;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+#categories {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+#categories h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.category-list {
+    display: flex;
+    justify-content: space-around;
+}
+
+.category {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.category:hover {
+    background-color: #0056b3;
+}
+
+.latest-posts {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.latest-posts h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.latest-posts .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.latest-posts .post {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.latest-posts .post h3 {
+    font-size: 20px;
+    color: #333;
+}
+
+.latest-posts .post p {
+    font-size: 16px;
+    color: #555;
+}
+
+.latest-posts .post-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.latest-posts .post-actions button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.latest-posts .post-actions button:hover {
+    background-color: #0056b3;
+}
+
+.latest-posts .post-actions a {
+    text-decoration: none;
+    color: #007bff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+}
+
+.latest-posts .post-actions a:hover {
+    background-color: #e1e1e1;
+}
+
+.create-post {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.create-post .btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.create-post .btn:hover {
+    background-color: #0056b3;
+}
+
+.comments {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+.comments h3 {
+    font-size: 20px;
+    color: #333;
+}
+
+.comment-list {
+    margin-top: 20px;
+}
+
+.comment {
+    background-color: #ffffff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.comment p {
+    font-size: 16px;
+    color: #555;
+}
+
+.comment strong {
+    color: #007bff;
+}
+
+.post-detail {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+.post-detail h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+.post-detail p {
+    font-size: 16px;
+    color: #555;
+}
+
+.post-detail .post-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.post-detail .post-actions button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.post-detail .post-actions button:hover {
+    background-color: #0056b3;
+}
+
+.post-detail .post-actions a {
+    text-decoration: none;
+    color: #007bff;
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid #007bff;
+}
+
+.post-detail .post-actions a:hover {
+    background-color: #e1e1e1;
+}*/
+/*
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007BFF;
+    padding: 15px 20px;
+    color: white;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.account-btn {
+    background-color: white;
+    color: #007BFF;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: white;
+    margin-top: 100px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 50%;
+}
+
+.hero h1 {
+    color: #333;
+}
+
+.hero .btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+
+.categories {
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.category-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.category {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 180px;
+    text-align: center;
+    font-weight: bold;
+    transition: transform 0.3s;
+}
+
+.category:hover {
+    transform: scale(1.05);
+}
+.latest-posts .post {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .latest-posts .post h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .latest-posts .post p {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .post-image {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+footer {
+    background: #007BFF;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}*/
+/* CSS de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 60px; /* pour éviter le chevauchement du footer */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007BFF;
+    padding: 15px 20px;
+    color: white;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.account-btn {
+    background-color: white;
+    color: #007BFF;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: white;
+    margin-top: 100px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 50%;
+}
+
+.hero h1 {
+    color: #333;
+}
+
+.hero .btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.categories {
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.category-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.category {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 180px;
+    text-align: center;
+    font-weight: bold;
+    transition: transform 0.3s;
+}
+
+.category:hover {
+    transform: scale(1.05);
+}
+
+/* Section des derniers posts */
+.latest-posts {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    margin-top: 30px;
+    width: 80%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.latest-posts h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.latest-posts .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Style amélioré pour chaque post */
+.latest-posts .post {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.latest-posts .post:hover {
+    transform: scale(1.02);
+}
+
+.latest-posts .post h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.latest-posts .post p {
+    font-size: 1em;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+/* Affichage de l'image dans le post */
+.post-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+/* Boutons d'action pour les posts */
+.post-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.post-actions button,
+.post-actions a {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.post-actions button:hover,
+.post-actions a:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    background: #007BFF;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}

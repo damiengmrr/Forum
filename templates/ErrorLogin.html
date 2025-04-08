@@ -2,17 +2,14 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erreur - Login</title>
-    <link rel="stylesheet" href="../static/styles.css">
+    <title>Erreur de Connexion</title>
+    <link rel="stylesheet" href="/static/error.css">
 </head>
 <body>
-    <h1>Erreur - Login<br></h1>
-    
-    <p>Le nom d'utilisateur ou le mot de passe est incorrect.<br> </p>
-    
-    <a href="../templates/login.html"><button>réessayer</button></a>
-     
-    <a href="../templates/home.html"><button>retour à l'accueil</button></a>
+    <div class="error-container">
+        <h1>Erreur de Connexion 😢</h1>
+        <p>Adresse email ou mot de passe incorrect.</p>
+        <a href="/login" class="btn">Réessayer</a>
+    </div>
 </body>
 </html>
