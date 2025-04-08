@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/models"
 	"log"
 	"strings"
@@ -115,7 +114,7 @@ func GetPostsSortedByDate() ([]models.Post, error) {
 	rows, err := db.Query("SELECT id, author, title, content, date, image_path, categories, likes, dislikes FROM posts ORDER BY date DESC")
 	if err != nil {
 		return nil, err
-		fmt.Print(err)
+		//fmt.Print(err)
 	}
 	defer rows.Close()
 
@@ -181,5 +180,11 @@ func TogglePostVote(userID, postID int, voteType string) error {
 	} else {
 		_, err = db.Exec("UPDATE posts SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?", postID)
 	}
+	return err
+}
+
+func DeletePostByID(postID int) error {
+	db := GetDatabase()
+	_, err := db.Exec("DELETE FROM posts WHERE id = ?", postID)
 	return err
 }

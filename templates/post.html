@@ -137,6 +137,9 @@
           <a href="/like?id={{ .Post.ID }}" class="like-btn">👍 {{ .Post.Likes }}</a>
           <a href="/dislike?id={{ .Post.ID }}" class="dislike-btn">👎 {{ .Post.Dislikes }}</a>
         </div>
+        {{ if .IsAuthor }}
+          <a href="/delete-post?id={{ .Post.ID }}" class="delete-btn">🗑️ Supprimer le post</a>
+        {{ end }}
       </div>
     </section>
   

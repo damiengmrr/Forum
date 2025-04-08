@@ -184,6 +184,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Erreur Execute :", err)
 	}
 }
+
 /*
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
@@ -217,7 +218,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.Execute(w, data)
 }*/
-func AccountHandler(w http.ResponseWriter, r *http.Request) {
+/*		func AccountHandler(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -249,18 +250,104 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, data)
+}*/
+func AccountHandler(w http.ResponseWriter, r *http.Request) {
+	// Récupération du cookie de session
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	db := database.GetDatabase()
+	var username, email string
+
+	// Récupérer les infos de l'utilisateur
+	err = db.QueryRow("SELECT username, email FROM users WHERE id = ?", cookie.Value).Scan(&username, &email)
+	if err != nil {
+		log.Println("Erreur récupération user dans /account :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	// Récupérer le nombre de posts créés par l'utilisateur
+	var postCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM posts WHERE author = ?", username).Scan(&postCount)
+	if err != nil {
+		log.Println("Erreur récupération posts dans /account :", err)
+		postCount = 0
+	}
+
+	// Récupérer le nombre de commentaires faits par l'utilisateur
+	var commentCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM comments WHERE author = ?", username).Scan(&commentCount)
+	if err != nil {
+		log.Println("Erreur récupération commentaires dans /account :", err)
+		commentCount = 0
+	}
+
+	// Récupérer le nombre de likes donnés par l'utilisateur
+	var likeCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM votes_posts WHERE user_id = ? AND vote_type = 'like'", cookie.Value).Scan(&likeCount)
+	if err != nil {
+		log.Println("Erreur récupération likes dans /account :", err)
+		likeCount = 0
+	}
+
+	// Préparer les données pour le template
+	data := struct {
+		Username     string
+		Email        string
+		PostCount    int
+		CommentCount int
+		LikeCount    int
+	}{
+		Username:     username,
+		Email:        email,
+		PostCount:    postCount,
+		CommentCount: commentCount,
+		LikeCount:    likeCount,
+	}
+
+	// Charger le template
+	tmpl, err := template.ParseFiles("templates/account.html")
+	if err != nil {
+		log.Println("Erreur template account :", err)
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	// Exécuter le template avec les données
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		log.Println("Erreur Execute account.html :", err)
+	}
 }
+
 // ========================= LOGOUT =========================
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	// on supprime le cookie en le vidant
-	cookie := http.Cookie{
+	// log de déconnexion
+	log.Println("🚪 Déconnexion de l'utilisateur")
+
+	// on supprime le cookie session
+	sessionCookie := http.Cookie{
 		Name:   "session",
 		Value:  "",
 		Path:   "/",
-		MaxAge: -1, // ça le rend invalide
+		MaxAge: -1, // le rend invalide
 	}
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, &sessionCookie)
 
+	// on supprime aussi le cookie username
+	usernameCookie := http.Cookie{
+		Name:   "username",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	}
+	http.SetCookie(w, &usernameCookie)
+
+	// redirection vers l'accueil
 	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 

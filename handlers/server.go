@@ -3,7 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"forum/database" 
+	"forum/database"
 	"log"
 	"net/http"
 
@@ -58,6 +58,9 @@ func StartServer() {
 	http.HandleFunc("/like", LikeHandler)
 	http.HandleFunc("/dislike", DislikeHandler)
 	http.HandleFunc("/test-sessions", TestSessionHandler)
+	http.HandleFunc("/edit-profile", EditProfileHandler)
+	http.HandleFunc("/change-password", ChangePasswordHandler)
+	http.HandleFunc("/delete-post", DeletePostHandler)
 	http.HandleFunc("/", EchecHandler)
 
 	// lancement serveur
@@ -65,7 +68,7 @@ func StartServer() {
 	//log.Fatal(http.ListenAndServe(":8080", nil))
 	fmt.Println("============================================")
 	fmt.Println("🚀 Lancement du serveur FORUM")
-	fmt.Println("🌐 Adresse : http://localhost:8080/account")
+	fmt.Println("🌐 Adresse : http://localhost:8080/home")
 	fmt.Println("✅ Statut  : EN LIGNE")
 	fmt.Println("📌 Pour arrêter : Ctrl + C")
 	fmt.Println("============================================")
