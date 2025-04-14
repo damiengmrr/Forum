@@ -63,15 +63,16 @@ func StartServer() {
 	http.HandleFunc("/delete-post", DeletePostHandler)
 	http.HandleFunc("/", EchecHandler)
 
-	// lancement serveur
-	//fmt.Println("Serveur démarré sur http://localhost:8080/home")
-	//log.Fatal(http.ListenAndServe(":8080", nil))
+	// lancement serveur HTTPS
 	fmt.Println("============================================")
 	fmt.Println("🚀 Lancement du serveur FORUM")
-	fmt.Println("🌐 Adresse : http://localhost:8080/home")
-	fmt.Println("✅ Statut  : EN LIGNE")
+	fmt.Println("🌐 Adresse : https://localhost:8443/home")
+	fmt.Println("✅ Statut  : EN LIGNE (HTTPS sécurisé)")
 	fmt.Println("📌 Pour arrêter : Ctrl + C")
 	fmt.Println("============================================")
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	certFile := "cert.pem" // Assure-toi d'avoir ton fichier de certificat
+	keyFile := "key.pem"   // Et ta clé privée à la racine du projet
+
+	log.Fatal(http.ListenAndServeTLS(":8443", certFile, keyFile, nil))
 }

@@ -50,6 +50,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		// si un des champs est vide → erreur
 		if username == "" || email == "" || password == "" {
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
+			log.Println("❌ Erreur : un des champs est vide")
 			return
 		}
 
@@ -57,6 +58,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
+			log.Println("❌ Erreur de hachage du mot de passe :", err)
 			return
 		}
 
@@ -65,6 +67,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		_, err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, string(hashedPwd))
 		if err != nil {
 			http.ServeFile(w, r, "templates/ErrorRegister.html")
+			log.Println("❌ Erreur d'insertion dans la base :", err)
 			return
 		}
 
