@@ -1,12 +1,15 @@
 package handlers
 
 import (
+	//"Forum/database"
 	"database/sql"
 	"fmt"
 	"forum/database"
 	"forum/models"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/sessions"
@@ -133,6 +136,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 type PostWithFormattedDate struct {
 	models.Post
 	FormattedDate string
+	ProfilePicture string
 }
 
 // Afficher la page d'accueil avec tous les posts
@@ -151,12 +155,19 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// transformation avec la date formatée
+	// transformation avec la date formatée et la photo de profil de l'auteur
 	var posts []PostWithFormattedDate
 	for _, post := range rawPosts {
+		var profilePicture string
+		err := database.GetDatabase().QueryRow("SELECT profile_picture FROM users WHERE username = ?", post.Author).Scan(&profilePicture)
+		if err != nil || profilePicture == "" {
+			profilePicture = "default.jpg"
+		}
+
 		posts = append(posts, PostWithFormattedDate{
-			Post:          post,
-			FormattedDate: post.Date.Format("02 Jan 2006 à 15:04"),
+			Post:           post,
+			FormattedDate:  post.Date.Format("02 Jan 2006 à 15:04"),
+			ProfilePicture: profilePicture,
 		})
 	}
 
@@ -252,7 +263,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }*/
 func AccountHandler(w http.ResponseWriter, r *http.Request) {
-	// Récupération du cookie de session
+	// Recupere le cookie de session
 	cookie, err := r.Cookie("session")
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -261,16 +272,23 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 
 	db := database.GetDatabase()
 	var username, email string
+	var profilePicture sql.NullString
 
-	// Récupérer les infos de l'utilisateur
-	err = db.QueryRow("SELECT username, email FROM users WHERE id = ?", cookie.Value).Scan(&username, &email)
+	// Recupere les infos de l'utilisateur
+	err = db.QueryRow("SELECT username, email, profile_picture FROM users WHERE id = ?", cookie.Value).Scan(&username, &email, &profilePicture)
 	if err != nil {
 		log.Println("Erreur récupération user dans /account :", err)
 		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		return
 	}
 
-	// Récupérer le nombre de posts créés par l'utilisateur
+	// Si la photo est nulle, on met l'image par défaut
+	pic := "default.jpg"
+	if profilePicture.Valid && profilePicture.String != "" {
+		pic = profilePicture.String
+	}
+
+	// Recupere le nombre de posts créés par l'utilisateur
 	var postCount int
 	err = db.QueryRow("SELECT COUNT(*) FROM posts WHERE author = ?", username).Scan(&postCount)
 	if err != nil {
@@ -278,7 +296,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		postCount = 0
 	}
 
-	// Récupérer le nombre de commentaires faits par l'utilisateur
+	// Recupere le nombre de commentaires faits par l'utilisateur
 	var commentCount int
 	err = db.QueryRow("SELECT COUNT(*) FROM comments WHERE author = ?", username).Scan(&commentCount)
 	if err != nil {
@@ -286,7 +304,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		commentCount = 0
 	}
 
-	// Récupérer le nombre de likes donnés par l'utilisateur
+	// Recupere le nombre de likes donnés par l'utilisateur
 	var likeCount int
 	err = db.QueryRow("SELECT COUNT(*) FROM votes_posts WHERE user_id = ? AND vote_type = 'like'", cookie.Value).Scan(&likeCount)
 	if err != nil {
@@ -296,17 +314,19 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Préparer les données pour le template
 	data := struct {
-		Username     string
-		Email        string
-		PostCount    int
-		CommentCount int
-		LikeCount    int
+		Username       string
+		Email          string
+		PostCount      int
+		CommentCount   int
+		LikeCount      int
+		ProfilePicture string
 	}{
-		Username:     username,
-		Email:        email,
-		PostCount:    postCount,
-		CommentCount: commentCount,
-		LikeCount:    likeCount,
+		Username:       username,
+		Email:          email,
+		PostCount:      postCount,
+		CommentCount:   commentCount,
+		LikeCount:      likeCount,
+		ProfilePicture: pic,
 	}
 
 	// Charger le template
@@ -317,7 +337,7 @@ func AccountHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Exécuter le template avec les données
+	// Execute le template avec les données
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		log.Println("Erreur Execute account.html :", err)
@@ -394,4 +414,65 @@ func GetCurrentUser(r *http.Request) (int, string, error) {
 	}
 
 	return id, username, nil
+}
+
+func UploadProfilePictureHandler(w http.ResponseWriter, r *http.Request) {
+	// Verifie que la methode est bien POST
+	if r.Method != "POST" {
+		http.Redirect(w, r, "/echec.html", http.StatusSeeOther)
+		return
+	}
+
+	// Recupere la session pour obtenir l'utilisateur connecte
+	session, err := store.Get(r, "session-name")
+	if err != nil {
+		log.Println("Erreur de session :", err)
+		http.Redirect(w, r, "/echec.html", http.StatusSeeOther)
+		return
+	}
+
+	userID, ok := session.Values["userID"].(int)
+	if !ok {
+		log.Println("Utilisateur non connecte")
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	// Recupere le fichier depuis le formulaire
+	file, handler, err := r.FormFile("profile_picture")
+	if err != nil {
+		log.Println("Erreur de recuperation du fichier :", err)
+		http.Redirect(w, r, "/echec.html", http.StatusSeeOther)
+		return
+	}
+	defer file.Close()
+
+	// Cree le chemin complet pour sauvegarder l'image
+	filePath := fmt.Sprintf("./static/uploads/profile_pictures/%s", handler.Filename)
+	dst, err := os.Create(filePath)
+	if err != nil {
+		log.Println("Erreur de creation du fichier :", err)
+		http.Redirect(w, r, "/echec.html", http.StatusSeeOther)
+		return
+	}
+	defer dst.Close()
+
+	// Copie le fichier upload dans le dossier
+	if _, err := io.Copy(dst, file); err != nil {
+		log.Println("Erreur de copie du fichier :", err)
+		http.Redirect(w, r, "/echec.html", http.StatusSeeOther)
+		return
+	}
+
+	// Met a jour la BDD avec le nom du fichier image
+	db := database.GetDatabase()
+	_, err = db.Exec("UPDATE users SET profile_picture = ? WHERE id = ?", handler.Filename, userID)
+	if err != nil {
+		log.Println("Erreur d'update BDD :", err)
+		http.Redirect(w, r, "/echec.html", http.StatusSeeOther)
+		return
+	}
+
+	// Redirige vers le profil ou la page precedente
+	http.Redirect(w, r, "/account", http.StatusSeeOther)
 }

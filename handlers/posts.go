@@ -35,6 +35,17 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ✅ récupère la photo de profil de l'auteur du post
+	var profilePicture sql.NullString
+	err = database.GetDatabase().QueryRow("SELECT profile_picture FROM users WHERE username = ?", post.Author).Scan(&profilePicture)
+	if err != nil {
+		log.Println("❌ erreur récupération photo profil auteur :", err)
+	}
+	pic := "default.jpg"
+	if profilePicture.Valid && profilePicture.String != "" {
+		pic = profilePicture.String
+	}
+
 	comments, err := database.GetCommentsByPostID(id)
 	if err != nil {
 		log.Println("❌ erreur récup commentaires :", err)
@@ -45,16 +56,19 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	// 🟢 injecter les commentaires dans le post
 	post.Comments = comments
 
+	// ✅ structure enrichie avec la photo de profil
 	data := struct {
-		Post          models.Post
-		FormattedDate string
-		Comments      []models.Comment
-		IsAuthor      bool // ✅ ajoute ce champ !
+		Post           models.Post
+		FormattedDate  string
+		Comments       []models.Comment
+		IsAuthor       bool
+		ProfilePicture string
 	}{
-		Post:          post,
-		FormattedDate: post.Date.Format("02 Jan 2006 à 15:04"),
-		Comments:      comments,
-		IsAuthor:      post.Author == username, // ✅ ici on compare l'auteur au user connecté
+		Post:           post,
+		FormattedDate:  post.Date.Format("02 Jan 2006 à 15:04"),
+		Comments:       comments,
+		IsAuthor:       post.Author == username,
+		ProfilePicture: pic,
 	}
 
 	tmpl, err := template.ParseFiles("templates/post.html")

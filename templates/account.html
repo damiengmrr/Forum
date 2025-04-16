@@ -86,8 +86,9 @@
 <body>
 
   <div class="container">
-    <h1>👤 Mon Compte</h1>
 
+    <h1>👤 Mon Compte</h1>
+<img src="/static/uploads/profile_pictures/{{ if .ProfilePicture }}{{ .ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 20px;" />
     <div class="section">
       <h2>Informations de Profil</h2>
       <p><strong>Nom d'utilisateur :</strong> {{ .Username }}</p>

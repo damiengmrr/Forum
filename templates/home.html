@@ -57,6 +57,7 @@
     <div class="post-list">
       {{ range .Posts }}
       <div class="post">
+        <img src="/static/uploads/profile_pictures/{{ if .ProfilePicture }}{{ .ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;" />
         <h3>{{ .Author }}</h3>
         <h3>{{ .Title }}</h3>
         <p><strong>Date :</strong> {{ .FormattedDate }}</p>

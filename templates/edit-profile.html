@@ -80,6 +80,14 @@
       <input type="text" id="username" name="username" required /><br /><br />
       <button type="submit">Enregistrer les modifications</button>
     </form>
+    <form method="POST" action="/upload-profile-picture" enctype="multipart/form-data">
+        <label for="profile_picture">Photo de profil :</label><br />
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required /><br /><br />
+        <button type="submit">Mettre à jour la photo</button>
+      </form>
+      
+      <br />
+      <a href="/account">Retour au compte</a>
     <br />
     <a href="/account">Retour au compte</a>
   </div>
