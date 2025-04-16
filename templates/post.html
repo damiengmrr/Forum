@@ -105,7 +105,7 @@
 <body>
 
   <header>
-    <img src="/static/image/forum.png" width="70" height="auto" />
+    <li><a href="/home"><img src="/static/image/forum.png" width="70" height="auto" /></a></li>
     <nav>
       <ul>
         <li><a href="/home">Accueil</a></li>
@@ -164,8 +164,12 @@
         {{ range .Post.Comments }}
           <div class="comment">
             <div class="comment-header">
-              <img src="/static/uploads/profile_pictures/{{ if .ProfilePicture }}{{ .ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" width="40" style="border-radius: 50%; object-fit: cover;" />
-              <strong>{{ .Author }}</strong>
+              {{ if .ProfilePicture }}
+              <img src="/static/{{ .ProfilePicture }}" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+            {{ else }}
+              <img src="/static/uploads/profile_pictures/default.jpg" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+            {{ end }}              
+            <strong>{{ .Author }}</strong>
             </div>
             <p style="margin-top: 5px;">{{ .Content }}</p>
             <div class="post-actions" style="margin-left: 50px;">
@@ -177,8 +181,12 @@
             {{ if .Response }}
             <div class="response">
               <div class="comment-header">
-                <img src="/static/uploads/profile_pictures/{{ if .Response.ProfilePicture }}{{ .Response.ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" width="35" style="border-radius: 50%; object-fit: cover;" />
-                <strong>{{ .Response.Author }}</strong>
+                {{ if .ProfilePicture }}
+                <img src="/static/uploads/profile_pictures/{{ .ProfilePicture }}" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+              {{ else }}
+                <img src="/static/uploads/profile_pictures/default.jpg" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+              {{ end }}                
+              <strong>{{ .Response.Author }}</strong>
               </div>
               <p>{{ .Response.Content }}</p>
               <div class="post-actions" style="margin-left: 45px;">
