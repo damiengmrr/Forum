@@ -53,7 +53,7 @@
   </section>
 
   <section class="latest-posts">
-    <h2>Derniers Posts</h2>
+    <h2 style="text-align: center;">Derniers Posts</h2>
     <div class="post-list">
       {{ range .Posts }}
       <div class="post">
@@ -62,10 +62,11 @@
         <h3>{{ .Title }}</h3>
         <p><strong>Date :</strong> {{ .FormattedDate }}</p>
         <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
+        <p>{{ .Content }}</p>
         {{ if .ImagePath }}
           <img src="{{ .ImagePath }}" alt="Image du post" class="post-image"/>
         {{ end }}
-        <p>{{ .Content }}</p>
+        
         <div class="post-actions">
           <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
           <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
