@@ -105,7 +105,7 @@
 <body>
 
   <header>
-    <img src="/static/image/forum.png" width="70" height="auto" />
+    <li><a href="/home"><img src="/static/image/forum.png" width="70" height="auto" /></a></li>
     <nav>
       <ul>
         <li><a href="/home">Accueil</a></li>
@@ -124,19 +124,20 @@
     <section class="latest-posts">
       <div class="post">
         <h2>{{ .Post.Title }}</h2>
+        <img src="/static/uploads/profile_pictures/{{ if .ProfilePicture }}{{ .ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;" />
         <p><strong>Par :</strong> {{ .Post.Author }} | <strong>Date :</strong> {{ .FormattedDate }}</p>
         <p><strong>Catégorie :</strong> {{ range .Post.Categories }}{{ . }} {{ end }}</p>
-        
+        <p>{{ .Post.Content }}</p>
         {{ if .Post.ImagePath }}
           <img src="{{ .Post.ImagePath }}" alt="Image du post" class="post-image" />
         {{ end }}
-  
-        <p>{{ .Post.Content }}</p>
-  
         <div class="post-actions">
           <a href="/like?id={{ .Post.ID }}" class="like-btn">👍 {{ .Post.Likes }}</a>
           <a href="/dislike?id={{ .Post.ID }}" class="dislike-btn">👎 {{ .Post.Dislikes }}</a>
         </div>
+        {{ if .IsAuthor }}
+          <a href="/delete-post?id={{ .Post.ID }}" class="delete-btn">🗑️ Supprimer le post</a>
+        {{ end }}
       </div>
     </section>
   
@@ -160,8 +161,12 @@
         {{ range .Post.Comments }}
           <div class="comment">
             <div class="comment-header">
-              <img src="{{ .Avatar }}" alt="avatar" width="40" />
-              <strong>{{ .Author }}</strong>
+              {{ if .ProfilePicture }}
+              <img src="/static/{{ .ProfilePicture }}" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+            {{ else }}
+              <img src="/static/uploads/profile_pictures/default.jpg" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+            {{ end }}              
+            <strong>{{ .Author }}</strong>
             </div>
             <p style="margin-top: 5px;">{{ .Content }}</p>
             <div class="post-actions" style="margin-left: 50px;">
@@ -173,8 +178,12 @@
             {{ if .Response }}
             <div class="response">
               <div class="comment-header">
-                <img src="{{ .Response.Avatar }}" alt="avatar" width="35" />
-                <strong>{{ .Response.Author }}</strong>
+                {{ if .ProfilePicture }}
+                <img src="/static/uploads/profile_pictures/{{ .ProfilePicture }}" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+              {{ else }}
+                <img src="/static/uploads/profile_pictures/default.jpg" alt="Photo de profil" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+              {{ end }}                
+              <strong>{{ .Response.Author }}</strong>
               </div>
               <p>{{ .Response.Content }}</p>
               <div class="post-actions" style="margin-left: 45px;">
@@ -197,7 +206,7 @@
   </div>
 
   <footer>
-    <p>&copy; 2025 MonForum - Tous droits réservés</p>
+    <p>&copy; 2025 ForumPrime - Tous droits réservés</p>
   </footer>
 
   <script>

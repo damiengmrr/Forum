@@ -36,7 +36,7 @@
       <h1>Bienvenue {{ .Username }} 👋</h1>
       <p>Tu peux maintenant publier, liker, et commenter !</p>
     {{ else }}
-      <h1>Bienvenue sur MonForum</h1>
+      <h1>Bienvenue sur ForumPrime</h1>
       <p>Rejoignez la communauté et discutez avec d'autres passionnés !</p>
       <a href="/register" class="btn">S'inscrire</a>
     {{ end }}
@@ -53,18 +53,20 @@
   </section>
 
   <section class="latest-posts">
-    <h2>Derniers Posts</h2>
+    <h2 style="text-align: center;">Derniers Posts</h2>
     <div class="post-list">
       {{ range .Posts }}
       <div class="post">
+        <img src="/static/uploads/profile_pictures/{{ if .ProfilePicture }}{{ .ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-bottom: 5px;" />
         <h3>{{ .Author }}</h3>
         <h3>{{ .Title }}</h3>
         <p><strong>Date :</strong> {{ .FormattedDate }}</p>
         <p><strong>Catégorie :</strong> {{ range .Categories }}{{ . }} {{ end }}</p>
+        <p>{{ .Content }}</p>
         {{ if .ImagePath }}
           <img src="{{ .ImagePath }}" alt="Image du post" class="post-image"/>
         {{ end }}
-        <p>{{ .Content }}</p>
+        
         <div class="post-actions">
           <a href="/like?id={{ .ID }}" class="like-btn">👍 {{ .Likes }}</a>
           <a href="/dislike?id={{ .ID }}" class="dislike-btn">👎 {{ .Dislikes }}</a>
@@ -76,7 +78,7 @@
   </section>
 
   <footer>
-    <p>&copy; 2025 MonForum - Tous droits réservés</p>
+    <p>&copy; 2025 ForumPrime - Tous droits réservés</p>
   </footer>
 
 </body>

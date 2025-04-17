@@ -17,6 +17,9 @@ import (
 
 // pour afficher un post + ses commentaires
 func PostHandler(w http.ResponseWriter, r *http.Request) {
+	// ✅ récupère l'utilisateur connecté
+	_, username, _ := GetCurrentUser(r)
+
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -32,6 +35,17 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ✅ récupère la photo de profil de l'auteur du post
+	var profilePicture sql.NullString
+	err = database.GetDatabase().QueryRow("SELECT profile_picture FROM users WHERE username = ?", post.Author).Scan(&profilePicture)
+	if err != nil {
+		log.Println("❌ erreur récupération photo profil auteur :", err)
+	}
+	pic := "default.jpg"
+	if profilePicture.Valid && profilePicture.String != "" {
+		pic = profilePicture.String
+	}
+
 	comments, err := database.GetCommentsByPostID(id)
 	if err != nil {
 		log.Println("❌ erreur récup commentaires :", err)
@@ -39,23 +53,35 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 🟢 injecter les commentaires dans le post
 	post.Comments = comments
 
+	// ✅ structure enrichie avec la photo de profil
 	data := struct {
-		Post          models.Post
-		FormattedDate string
+		Post           models.Post
+		FormattedDate  string
+		Comments       []models.Comment
+		IsAuthor       bool
+		ProfilePicture string
 	}{
-		Post:          post,
-		FormattedDate: post.Date.Format("02 Jan 2006 à 15:04"),
+		Post:           post,
+		FormattedDate:  post.Date.Format("02 Jan 2006 à 15:04"),
+		Comments:       comments,
+		IsAuthor:       post.Author == username,
+		ProfilePicture: pic,
 	}
 
 	tmpl, err := template.ParseFiles("templates/post.html")
 	if err != nil {
+		log.Println("❌ erreur template :", err)
 		http.Redirect(w, r, "/echec", http.StatusSeeOther)
 		return
 	}
 
-	tmpl.Execute(w, data)
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		log.Println("❌ erreur execute template :", err)
+	}
 }
 
 // pour filtrer les posts par catégorie
@@ -336,4 +362,40 @@ func TimeHandlers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl.Execute(w, data)
+}
+
+func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
+	userID, _, err := GetCurrentUser(r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	postIDStr := r.URL.Query().Get("id")
+	postID, err := strconv.Atoi(postIDStr)
+	if err != nil {
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	// Vérifie que l'utilisateur est bien l'auteur du post
+	post, err := database.GetPostByID(postID)
+	if err != nil {
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	// Vérifie que l'utilisateur est bien l'auteur du post
+	if post.Author != database.GetUsernameByID(userID) {
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	err = database.DeletePostByID(postID)
+	if err != nil {
+		http.Redirect(w, r, "/echec", http.StatusSeeOther)
+		return
+	}
+
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }

@@ -86,8 +86,9 @@
 <body>
 
   <div class="container">
-    <h1>👤 Mon Compte</h1>
 
+    <h1>👤 Mon Compte</h1>
+<img src="/static/uploads/profile_pictures/{{ if .ProfilePicture }}{{ .ProfilePicture }}{{ else }}default.jpg{{ end }}" alt="Photo de profil" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 20px;" />
     <div class="section">
       <h2>Informations de Profil</h2>
       <p><strong>Nom d'utilisateur :</strong> {{ .Username }}</p>
@@ -101,20 +102,20 @@
     <div class="section">
       <h2>Préférences</h2>
       <ul>
-        <li>🔔 Notifications : Activées</li>
-        <li>🌙 Mode sombre : Non activé</li>
-        <li>🔒 Sécurité renforcée : Active</li>
+        <li>🔔 Notifications : (mise à jour futur !)</li>
+        <li>🌙 Mode sombre : (mise à jour futur !)</li>
+        <li>🔒 Sécurité renforcée : (mise à jour futur !)</li>
       </ul>
     </div>
 
     <div class="section">
-      <h2>Mes Activités</h2>
-      <ul>
-        <li>📝 Posts créés : (à intégrer)</li>
-        <li>💬 Commentaires : (à intégrer)</li>
-        <li>👍 Likes donnés : (à intégrer)</li>
-      </ul>
-    </div>
+        <h2>Mes Activités</h2>
+        <ul>
+          <li>📝 Posts créés : {{ .PostCount }}</li>
+          <li>💬 Commentaires : {{ .CommentCount }}</li>
+          <li>👍 Likes donnés : {{ .LikeCount }}</li>
+        </ul>
+      </div>
 
     <div class="actions">
       <a href="/home" class="button">Retour à l'accueil</a>
@@ -123,7 +124,7 @@
   </div>
 
   <footer>
-    &copy; 2025 MonForum - Tous droits réservés
+    &copy; 2025 ForumPrime - Tous droits réservés
   </footer>
 
 </body>

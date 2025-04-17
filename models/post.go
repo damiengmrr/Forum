@@ -15,6 +15,7 @@ type Comment struct {
 	Dislikes   int
 	ResponseTo sql.NullInt64
 	Response   *Comment
+	ProfilePicture  string
 }
 
 type Post struct {

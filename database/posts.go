@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"forum/models"
 	"log"
 	"strings"
@@ -70,7 +69,63 @@ func fetchPosts(query string, args ...interface{}) ([]models.Post, error) {
 			continue
 		}
 
-		post.Date, err = time.Parse("2006-01-02 15:04:05", dateStr)
+		post.Date, _ = time.Parse("2006-01-02 15:04:05", dateStr)
+		post.Categories = strings.Split(catString, ",")
+
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
+// recupere un post par id
+func GetPostByID(id int) (models.Post, error) {
+	var post models.Post
+	var dateStr, catStr string
+
+	row := GetDatabase().QueryRow(`
+		SELECT id, author, title, content, date, image_path, categories, likes, dislikes
+		FROM posts WHERE id = ?`, id)
+
+	err := row.Scan(&post.ID, &post.Author, &post.Title, &post.Content,
+		&dateStr, &post.ImagePath, &catStr, &post.Likes, &post.Dislikes)
+	if err != nil {
+		return post, err
+	}
+
+	// formatage de la date
+	post.Date, _ = time.Parse("2006-01-02 15:04:05", dateStr)
+	post.Categories = strings.Split(catStr, ",")
+
+	return post, nil
+}
+
+func IncrementLike(id int) error {
+	db := GetDatabase()
+	_, err := db.Exec("UPDATE posts SET likes = likes + 1 WHERE id = ?", id)
+	return err
+}
+
+func IncrementDislike(id int) error {
+	db := GetDatabase()
+	_, err := db.Exec("UPDATE posts SET dislikes = dislikes + 1 WHERE id = ?", id)
+	return err
+}
+func GetPostsSortedByDate() ([]models.Post, error) {
+	db := GetDatabase()
+	rows, err := db.Query("SELECT id, author, title, content, date, image_path, categories, likes, dislikes FROM posts ORDER BY date DESC")
+	if err != nil {
+		return nil, err
+		//fmt.Print(err)
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+	for rows.Next() {
+		var post models.Post
+		var dateStr, catString string
+
+		err := rows.Scan(&post.ID, &post.Author, &post.Title, &post.Content, &dateStr, &post.ImagePath, &catString, &post.Likes, &post.Dislikes)
 		if err != nil {
 			log.Println("❌ erreur parse date:", err)
 		}
@@ -144,5 +199,11 @@ func updatePostVoteCount(postID int, voteType string, delta int) error {
 	if err != nil {
 		log.Println("❌ erreur update compteur vote post:", err)
 	}
+	return err
+}
+
+func DeletePostByID(postID int) error {
+	db := GetDatabase()
+	_, err := db.Exec("DELETE FROM posts WHERE id = ?", postID)
 	return err
 }

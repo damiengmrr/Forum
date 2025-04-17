@@ -12,7 +12,7 @@ import (
 func TestSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 
-	fmt.Fprintln(w, "=== DEBUG : INFOS DE SESSION EN COURS ===\n")
+	//fmt.Fprintln(w, "=== DEBUG : INFOS DE SESSION EN COURS ===\n")
 
 	// 🔍 Cookies reçus
 	fmt.Fprintln(w, "🍪 Cookies reçus :")

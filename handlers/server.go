@@ -57,7 +57,11 @@ func StartServer() {
 	http.HandleFunc("/settings", SettingsHandler)
 	http.HandleFunc("/contact", ContactHandler)
 	http.HandleFunc("/test-sessions", TestSessionHandler)
-	http.HandleFunc("/echec", EchecHandler)
+	http.HandleFunc("/edit-profile", EditProfileHandler)
+	http.HandleFunc("/change-password", ChangePasswordHandler)
+	http.HandleFunc("/delete-post", DeletePostHandler)
+	http.HandleFunc("/upload-profile-picture", UploadProfilePictureHandler)
+	http.HandleFunc("/", EchecHandler)
 
 	// lancement du serveur 🧩
 	printServerStart()
