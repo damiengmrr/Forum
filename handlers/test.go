@@ -14,19 +14,10 @@ func TestSessionHandler(w http.ResponseWriter, r *http.Request) {
 
 	//fmt.Fprintln(w, "=== DEBUG : INFOS DE SESSION EN COURS ===\n")
 
-	// 🔍 Cookies reçus
+	// 🔍 Cookies
 	fmt.Fprintln(w, "🍪 Cookies reçus :")
-	if cookies := r.Cookies(); len(cookies) == 0 {
-		fmt.Fprintln(w, "- Aucun cookie reçu.")
-	} else {
-		for _, c := range cookies {
-			fmt.Fprintf(w, "- %s = %s\n", c.Name, c.Value)
-			if c.Expires.IsZero() {
-				fmt.Fprintln(w, "  ⏰ Pas de date d'expiration spécifiée (session cookie)")
-			} else {
-				fmt.Fprintf(w, "  ⏰ Expire le : %s\n", c.Expires.Format("02 Jan 2006 15:04:05"))
-			}
-		}
+	for _, c := range r.Cookies() {
+		fmt.Fprintf(w, "- %s = %s\n", c.Name, c.Value)
 	}
 	fmt.Fprintln(w)
 
@@ -66,38 +57,45 @@ func TestSessionHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, r.UserAgent())
 	fmt.Fprintln(w)
 
-	// 🕒 Timestamp actuel
+	// 🕒 Timestamp
 	fmt.Fprintln(w, "🕒 Date actuelle :")
 	fmt.Fprintln(w, time.Now().Format("02 Jan 2006 15:04:05"))
 	fmt.Fprintln(w)
 
 	// 🗄️ Infos base de données
 	fmt.Fprintln(w, "🗄️ Base de données :")
-	if database.CheckDatabaseConnection() {
-		fmt.Fprintln(w, "✅ Connexion BDD : OK")
-
-		db := database.GetDatabase()
-		var userCount, postCount int
-
-		err := db.QueryRow("SELECT COUNT(*) FROM users").Scan(&userCount)
-		if err != nil {
-			fmt.Fprintln(w, "⚠️ Erreur comptage utilisateurs :", err)
-		} else {
-			fmt.Fprintf(w, "- Nombre d'utilisateurs : %d\n", userCount)
-		}
-
-		err = db.QueryRow("SELECT COUNT(*) FROM posts").Scan(&postCount)
-		if err != nil {
-			fmt.Fprintln(w, "⚠️ Erreur comptage posts :", err)
-		} else {
-			fmt.Fprintf(w, "- Nombre de posts : %d\n", postCount)
-		}
-	} else {
+	db := database.GetDatabase()
+	if db == nil {
 		fmt.Fprintln(w, "❌ Connexion BDD : NON ÉTABLIE")
+	} else {
+		err = db.Ping()
+		if err != nil {
+			fmt.Fprintln(w, "⚠️ Connexion BDD : Erreur de ping :", err)
+		} else {
+			fmt.Fprintln(w, "✅ Connexion BDD : OK")
+
+			// Compter les utilisateurs
+			var userCount int
+			err = db.QueryRow("SELECT COUNT(*) FROM users").Scan(&userCount)
+			if err != nil {
+				fmt.Fprintln(w, "⚠️ Erreur comptage utilisateurs :", err)
+			} else {
+				fmt.Fprintf(w, "- Nombre d'utilisateurs : %d\n", userCount)
+			}
+
+			// Compter les posts
+			var postCount int
+			err = db.QueryRow("SELECT COUNT(*) FROM posts").Scan(&postCount)
+			if err != nil {
+				fmt.Fprintln(w, "⚠️ Erreur comptage posts :", err)
+			} else {
+				fmt.Fprintf(w, "- Nombre de posts : %d\n", postCount)
+			}
+		}
 	}
 	fmt.Fprintln(w)
 
-	// 📝 Logs ou erreurs récentes (placeholder futur logger)
+	// 📝 Logs ou erreurs récentes (placeholder pour l'instant)
 	fmt.Fprintln(w, "📝 Logs / Erreurs récentes :")
 	fmt.Fprintln(w, "- (Pas de système de logs actif actuellement)")
 	fmt.Fprintln(w)
