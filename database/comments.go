@@ -6,12 +6,10 @@ import (
 	"log"
 )
 
-// recupere les commentaires par post
 func GetCommentsByPostID(postID int) ([]models.Comment, error) {
-	query := "SELECT id, post_id, author, content, likes, dislikes, avatar, response_to FROM comments WHERE post_id = ?"
-	rows, err := GetDatabase().Query(query, postID)
+	db := GetDatabase()
+	rows, err := db.Query("SELECT id, post_id, author, content, likes, dislikes, avatar, response_to FROM comments WHERE post_id = ?", postID)
 	if err != nil {
-		log.Println("❌ erreur query comments:", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -24,14 +22,14 @@ func GetCommentsByPostID(postID int) ([]models.Comment, error) {
 
 		err := rows.Scan(&c.ID, &c.PostID, &c.Author, &c.Content, &c.Likes, &c.Dislikes, &avatar, &c.ResponseTo)
 		if err != nil {
-			log.Println("❌ erreur scan commentaire:", err)
+			log.Println("❌ erreur lecture commentaire :", err)
 			continue
 		}
 
 		if avatar.Valid {
 			c.Avatar = avatar.String
 		} else {
-			c.Avatar = "/static/image/default-avatar.png"
+			c.Avatar = "/static/image/default-avatar.png" // image par défaut
 		}
 
 		comments = append(comments, c)
@@ -40,98 +38,62 @@ func GetCommentsByPostID(postID int) ([]models.Comment, error) {
 	return comments, nil
 }
 
-// insert un commentaire (reponse simple)
 func InsertReply(postID int, content, author string) error {
-	_, err := GetDatabase().Exec(`
-		INSERT INTO comments (post_id, author, content, date, likes, dislikes)
-			VALUES (?, ?, ?, datetime('now'), 0, 0)`, postID, author, content)
+	db := GetDatabase()
+	stmt, err := db.Prepare("INSERT INTO comments (post_id, author, content, date, likes, dislikes) VALUES (?, ?, ?, datetime('now'), 0, 0)")
 	if err != nil {
-		log.Println("❌ erreur insert reply:", err)
+		return err
 	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(postID, author, content)
 	return err
 }
-
-// increment like commentaire
 func IncrementCommentLike(id int) error {
-	_, err := GetDatabase().Exec("UPDATE comments SET likes = likes + 1 WHERE id = ?", id)
-	if err != nil {
-		log.Println("❌ erreur increment like comment:", err)
-	}
+	db := GetDatabase()
+	_, err := db.Exec("UPDATE comments SET likes = likes + 1 WHERE id = ?", id)
 	return err
 }
 
-// increment dislike commentaire
 func IncrementCommentDislike(id int) error {
-	_, err := GetDatabase().Exec("UPDATE comments SET dislikes = dislikes + 1 WHERE id = ?", id)
-	if err != nil {
-		log.Println("❌ erreur increment dislike comment:", err)
-	}
+	db := GetDatabase()
+	_, err := db.Exec("UPDATE comments SET dislikes = dislikes + 1 WHERE id = ?", id)
 	return err
+
 }
 
-// gestion votes commentaire (like/dislike exclusif)
 func ToggleCommentVote(userID, commentID int, voteType string) error {
 	db := GetDatabase()
 
 	var current string
-	err := db.QueryRow(`SELECT vote_type FROM votes_comments WHERE user_id = ? AND comment_id = ?`, userID, commentID).Scan(&current)
+	err := db.QueryRow("SELECT vote_type FROM votes_comments WHERE user_id = ? AND comment_id = ?", userID, commentID).Scan(&current)
 
-	switch {
-	case err == sql.ErrNoRows:
-		// pas encore vote -> insert
-		_, err = db.Exec(`INSERT INTO votes_comments (user_id, comment_id, vote_type) VALUES (?, ?, ?)`, userID, commentID, voteType)
-		if err != nil {
-			log.Println("❌ erreur insert vote comment:", err)
-			return err
+	if err == sql.ErrNoRows {
+		_, err = db.Exec("INSERT INTO votes_comments (user_id, comment_id, vote_type) VALUES (?, ?, ?)", userID, commentID, voteType)
+	} else if err == nil {
+		if current == voteType {
+			_, err = db.Exec("DELETE FROM votes_comments WHERE user_id = ? AND comment_id = ?", userID, commentID)
+		} else {
+			_, err = db.Exec("UPDATE votes_comments SET vote_type = ? WHERE user_id = ? AND comment_id = ?", voteType, userID, commentID)
 		}
-
-	case err != nil:
-		log.Println("❌ erreur select vote comment:", err)
+	} else {
 		return err
-
-	case current == voteType:
-		// meme vote -> delete
-		_, err = db.Exec(`DELETE FROM votes_comments WHERE user_id = ? AND comment_id = ?`, userID, commentID)
-		if err != nil {
-			log.Println("❌ erreur delete vote comment:", err)
-			return err
-		}
-
-	default:
-		// vote different -> update
-		_, err = db.Exec(`UPDATE votes_comments SET vote_type = ? WHERE user_id = ? AND comment_id = ?`, voteType, userID, commentID)
-		if err != nil {
-			log.Println("❌ erreur update vote comment:", err)
-			return err
-		}
 	}
 
-	// maj des compteurs apres le vote
-	return updateCommentVoteCount(commentID)
-}
+	// recalcul des totaux
+	var likes, dislikes int
+	db.QueryRow("SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'like'", commentID).Scan(&likes)
+	db.QueryRow("SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'dislike'", commentID).Scan(&dislikes)
+	_, err = db.Exec("UPDATE comments SET likes = ?, dislikes = ? WHERE id = ?", likes, dislikes, commentID)
 
-// insert un commentaire avec possibilite de reponse
-func InsertComment(postID int, author, content string, responseTo sql.NullInt64) error {
-	_, err := GetDatabase().Exec(`
-		INSERT INTO comments (post_id, author, content, date, likes, dislikes, response_to)
-			VALUES (?, ?, ?, datetime('now'), 0, 0, ?)`, postID, author, content, responseTo)
-	if err != nil {
-		log.Println("❌ erreur insert comment:", err)
-	}
 	return err
 }
 
-// private function pour mettre a jour les compteurs like/dislike
-func updateCommentVoteCount(commentID int) error {
+func InsertComment(postID int, author, content string, responseTo sql.NullInt64) error {
 	db := GetDatabase()
-
-	var likes, dislikes int
-	db.QueryRow(`SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'like'`, commentID).Scan(&likes)
-	db.QueryRow(`SELECT COUNT(*) FROM votes_comments WHERE comment_id = ? AND vote_type = 'dislike'`, commentID).Scan(&dislikes)
-
-	_, err := db.Exec(`UPDATE comments SET likes = ?, dislikes = ? WHERE id = ?`, likes, dislikes, commentID)
-	if err != nil {
-		log.Println("❌ erreur update compteur comment:", err)
-	}
+	_, err := db.Exec(`
+		INSERT INTO comments (post_id, author, content, date, likes, dislikes, response_to)
+		VALUES (?, ?, ?, datetime('now'), 0, 0, ?)
+	`, postID, author, content, responseTo)
 	return err
 }
